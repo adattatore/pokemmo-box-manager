@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guida - PokéMMO Box Manager</title>
+    <style>
+        /* --- STILI BASE CONDIVISI --- */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e272e; background-image: radial-gradient(#2f3640 1px, transparent 1px); background-size: 20px 20px; color: #d2dae2; padding: 20px; margin: 0; line-height: 1.6; }
+        
+        /* ALLARGATO A 1100px COME LE ALTRE PAGINE */
+        .container { max-width: 1100px; margin: 0 auto; background-color: rgba(44, 62, 80, 0.95); padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #34495e; }
+        
+        h1 { text-align: center; color: #ffdd59; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        
+        /* --- BARRA DI NAVIGAZIONE (FIX CENTRAMENTO) --- */
+        .navbar { position: relative; display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 30px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; border: 1px solid #485460; flex-wrap: wrap; }
+        .navbar a { color: #a4b0be; text-decoration: none; font-weight: bold; text-transform: uppercase; padding: 10px 20px; border-radius: 8px; transition: 0.3s; font-size: 14px; letter-spacing: 1px; }
+        .navbar a:hover { color: white; background: rgba(255,255,255,0.1); }
+        .navbar a.active { color: white; background: linear-gradient(135deg, #0fb9b1, #0a9992); box-shadow: 0 0 15px rgba(15, 185, 177, 0.4); }
+
+        /* SELETTORE LINGUA ASSOLUTO A DESTRA */
+        .lang-switcher { position: absolute; right: 20px; display: flex; gap: 10px; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        .lang-btn { cursor: pointer; font-size: 18px; opacity: 0.4; transition: 0.2s; filter: grayscale(100%); }
+        .lang-btn:hover { opacity: 0.8; filter: grayscale(50%); transform: scale(1.1); }
+        .lang-btn.active { opacity: 1; filter: grayscale(0%); transform: scale(1.1); text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+
+        /* --- STILI DELLA GUIDA --- */
+        .intro-text { text-align: center; font-size: 16px; margin-bottom: 30px; color: #a4b0be; }
+
+        .guide-section { background: rgba(0,0,0,0.4); border-radius: 15px; padding: 25px; margin-bottom: 25px; border-left: 5px solid #0fb9b1; border-top: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
+        .guide-section:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.4); border-left-color: #ffdd59; }
+        
+        .guide-section h2 { margin-top: 0; color: white; font-size: 22px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px dashed rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .guide-section h2 span { font-size: 28px; }
+
+        .guide-section p { color: #d2dae2; font-size: 15px; }
+        .guide-section ul { padding-left: 20px; color: #a4b0be; }
+        .guide-section li { margin-bottom: 10px; }
+        .guide-section li strong { color: #7bed9f; }
+
+        .highlight-box { background: rgba(255, 165, 2, 0.1); border: 1px solid #ffa502; padding: 15px; border-radius: 10px; color: #d2dae2; font-size: 14px; margin-top: 15px; }
+        .highlight-box strong { color: #ffa502; }
+
+        @media (max-width: 850px) {
+            .navbar { flex-direction: column; text-align: center; }
+            .lang-switcher { position: static; margin: 10px auto 0 auto; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="navbar">
+        <a href="index.html" id="nav-box">📦 Box Manager</a>
+        <a href="pokedex.html" id="nav-dex">📚 Pokédex Avanzato</a>
+        <a href="teambuilder.html" id="nav-team">🛡️ Teambuilder</a>    
+        <a href="guida.html" class="active" id="nav-guide">📖 Come Funziona</a>
+        
+        <div class="lang-switcher">
+            <span class="lang-btn" id="lang-it" onclick="setLang('it')" title="Italiano">🇮🇹</span>
+            <span class="lang-btn" id="lang-en" onclick="setLang('en')" title="English">🇬🇧</span>
+        </div>
+    </div>
+
+    <h1 id="page-title">📖 Manuale d'Uso</h1>
+    <p class="intro-text" id="intro-text">Scopri come sfruttare al massimo tutti gli strumenti a tua disposizione per dominare nel competitivo.</p>
+
+    <div class="guide-section">
+        <h2 id="title-box"><span>📦</span> Box Manager (Valutatore IV)</h2>
+        <div id="desc-box">
+            <p>Il Box Manager è lo strumento principale per valutare i Pokémon che hai catturato o bredato. Ti dice esattamente in quale ruolo competitivo il tuo Pokémon eccelle in base alla sua Natura e ai suoi IV (Valori Individuali).</p>
+            <ul>
+                <li><strong>Inserimento Dati:</strong> Cerca il tuo Pokémon, seleziona la Natura e inserisci i suoi 6 IV (da 0 a 31).</li>
+                <li><strong>Controllo Abilità:</strong> Se l'Abilità Attuale del tuo Pokémon è diversa da quella ideale per il suo ruolo, il sistema calcolerà automaticamente se ti serve una <em>Pillola Abilità</em> (~35.000$). Ti avviserà anche se l'abilità richiesta è Nascosta (HA).</li>
+                <li><strong>Punteggio Percentuale:</strong> Il sistema incrocia i tuoi dati con le statistiche ottimali, restituendoti un voto da 0% a 100% e il nome del ruolo (es. Attaccante Fisico, Muro Speciale).</li>
+                <li><strong>Azioni Rapide:</strong> Puoi salvare i Pokémon analizzati nel tuo Box personale e, con un click sul tasto "➕ Team", inviarli direttamente al simulatore di squadra!</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="guide-section">
+        <h2 id="title-dex"><span>📚</span> Pokédex Avanzato</h2>
+        <div id="desc-dex">
+            <p>Un database visivo progettato per chi gioca competitivo. Ti permette di sfogliare rapidamente tutti i Pokémon per trovare l'aggiunta perfetta alla tua squadra.</p>
+            <ul>
+                <li><strong>Filtri Rapidi:</strong> Puoi cercare per Nome, Tipo, Tier Competitiva (OU, UU, NU...) o persino per Regione di appartenenza (Generazione).</li>
+                <li><strong>Ordinamento:</strong> Ordina i Pokémon per numero di Pokédex o per la somma totale delle loro statistiche base (BST).</li>
+                <li><strong>Interazione Rapida:</strong> Clicca sul tasto "➕" in alto a destra di qualsiasi card per inserire quel Pokémon direttamente nella tua squadra attiva.</li>
+                <li><strong>Schede Dettagliate:</strong> Clicca su qualsiasi Pokémon nella griglia (o nel Box Manager) per aprire la sua pagina di Analisi Dettagliata.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="guide-section">
+        <h2 id="title-det"><span>🔍</span> Analisi Dettagliata & Pro Tips</h2>
+        <div id="desc-det">
+            <p>La pagina "Dettaglio" è un'enciclopedia dedicata a un singolo Pokémon. Offre tutte le informazioni di cui hai bisogno per schierarlo correttamente.</p>
+            <ul>
+                <li><strong>Identikit Completo:</strong> Visualizza Statistiche Base (BST), Gruppi Uovo, Tier e tutte le abilità disponibili (incluse quelle nascoste).</li>
+                <li><strong>Matchup dei Tipi:</strong> Ti mostra esattamente a quali tipi il Pokémon è debole, resistente o immune in difesa, e quali tipi può colpire con efficacia (STAB) in attacco. Clicca sui badge colorati dei tipi per aprire una finestra pop-up con i dettagli di quel tipo!</li>
+                <li><strong>Pro Tips (Note Esperto):</strong> Una descrizione personalizzata su come utilizzare quel Pokémon nel meta competitivo attuale.</li>
+                <li><strong>Albero Evolutivo:</strong> Una grafica intuitiva che ti mostra l'intera linea evolutiva, indicandoti i requisiti (Livello, Pietre, Scambi, Felicità) per far evolvere il Pokémon.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="guide-section">
+        <h2 id="title-team"><span>🛡️</span> Teambuilder & Randomizer</h2>
+        <div id="desc-team">
+            <p>Il cuore pulsante per creare la squadra perfetta. Puoi costruire squadre manualmente o fartele suggerire dal sistema.</p>
+            <ul>
+                <li><strong>Analisi Difensiva Globale:</strong> Mentre aggiungi Pokémon ai tuoi 6 slot, la tabella sottostante si aggiornerà in tempo reale mostrandoti i "buchi" difensivi. Se la tua squadra ha 3 o più Pokémon deboli allo stesso tipo (e nessuna resistenza), la tabella si illuminerà di rosso per avvisarti del pericolo!</li>
+                <li><strong>Motore di Randomizzazione:</strong> Vuoi allenarti o fare una sfida tematica? Usa il bottone <em>"🎲 Random"</em> per generare una squadra casuale.</li>
+                <li><strong>Filtri Random Avanzati:</strong> Prima di rullare i dadi, puoi scegliere di escludere i Leggendari, limitare la generazione a una specifica Regione (es. "Solo Pokémon di Kanto"), o forzare un range di Statistiche Base (es. tra 500 e 600) per evitare Pokémon troppo deboli.</li>
+                <li><strong>Archivio Squadre:</strong> Una volta che hai creato il team perfetto, dagli un nome e salvalo! Rimarrà memorizzato nel tuo browser e potrai ricaricarlo in qualsiasi momento.</li>
+            </ul>
+        </div>
+        
+        <div class="highlight-box">
+            <strong id="warn-title">Nota sul salvataggio dati:</strong> <span id="warn-desc">Tutte le squadre, i Pokémon salvati nel Box e le preferenze di lingua vengono memorizzate localmente nel tuo browser tramite <em>LocalStorage</em>. Non serve registrazione! Se svuoti la cache o usi la navigazione in incognito, perderai i tuoi dati salvati.</span>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- GESTIONE LINGUA ---
+    let lang = localStorage.getItem('pokemmo_lang') || 'it';
+
+    function setLang(l) {
+        localStorage.setItem('pokemmo_lang', l);
+        location.reload();
+    }
+
+    const dict = {
+        it: {
+            nav_box: "📦 Box Manager", nav_dex: "📚 Pokédex Avanzato", nav_team: "🛡️ Teambuilder", nav_guide: "📖 Come Funziona",
+            page_title: "📖 Manuale d'Uso",
+            intro: "Scopri come sfruttare al massimo tutti gli strumenti a tua disposizione per dominare nel competitivo.",
+            
+            box_title: "<span>📦</span> Box Manager (Valutatore IV)",
+            box_desc: `
+                <p>Il Box Manager è lo strumento principale per valutare i Pokémon che hai catturato o bredato. Ti dice esattamente in quale ruolo competitivo il tuo Pokémon eccelle in base alla sua Natura e ai suoi IV (Valori Individuali).</p>
+                <ul>
+                    <li><strong>Inserimento Dati:</strong> Cerca il tuo Pokémon, seleziona la Natura e inserisci i suoi 6 IV (da 0 a 31).</li>
+                    <li><strong>Controllo Abilità:</strong> Se l'Abilità Attuale del tuo Pokémon è diversa da quella ideale per il suo ruolo, il sistema calcolerà automaticamente se ti serve una <em>Pillola Abilità</em> (~35.000$). Ti avviserà anche se l'abilità richiesta è Nascosta (HA).</li>
+                    <li><strong>Punteggio Percentuale:</strong> Il sistema incrocia i tuoi dati con le statistiche ottimali, restituendoti un voto da 0% a 100% e il nome del ruolo.</li>
+                    <li><strong>Azioni Rapide:</strong> Puoi salvare i Pokémon analizzati nel tuo Box personale e, con un click sul tasto "➕ Team", inviarli direttamente al simulatore di squadra!</li>
+                </ul>`,
+
+            dex_title: "<span>📚</span> Pokédex Avanzato",
+            dex_desc: `
+                <p>Un database visivo progettato per chi gioca competitivo. Ti permette di sfogliare rapidamente tutti i Pokémon per trovare l'aggiunta perfetta alla tua squadra.</p>
+                <ul>
+                    <li><strong>Filtri Rapidi:</strong> Puoi cercare per Nome, Tipo, Tier Competitiva (OU, UU, NU...) o persino per Regione di appartenenza (Generazione).</li>
+                    <li><strong>Ordinamento:</strong> Ordina i Pokémon per numero di Pokédex o per la somma totale delle loro statistiche base (BST).</li>
+                    <li><strong>Interazione Rapida:</strong> Clicca sul tasto "➕" in alto a destra di qualsiasi card per inserire quel Pokémon direttamente nella tua squadra attiva.</li>
+                    <li><strong>Schede Dettagliate:</strong> Clicca su qualsiasi Pokémon nella griglia (o nel Box) per aprire la sua pagina di Analisi Dettagliata.</li>
+                </ul>`,
+
+            det_title: "<span>🔍</span> Analisi Dettagliata & Pro Tips",
+            det_desc: `
+                <p>La pagina "Dettaglio" è un'enciclopedia dedicata a un singolo Pokémon. Offre tutte le informazioni di cui hai bisogno per schierarlo correttamente.</p>
+                <ul>
+                    <li><strong>Identikit Completo:</strong> Visualizza Statistiche Base (BST), Gruppi Uovo, Tier e tutte le abilità disponibili (incluse quelle nascoste).</li>
+                    <li><strong>Matchup dei Tipi:</strong> Ti mostra esattamente a quali tipi il Pokémon è debole, resistente o immune in difesa, e quali tipi può colpire con efficacia (STAB). Clicca sui badge colorati dei tipi per aprire una finestra pop-up con i dettagli di quel tipo!</li>
+                    <li><strong>Pro Tips:</strong> Una descrizione personalizzata su come utilizzare quel Pokémon nel meta competitivo.</li>
+                    <li><strong>Albero Evolutivo:</strong> Una grafica intuitiva che ti mostra l'intera linea evolutiva e i requisiti necessari.</li>
+                </ul>`,
+
+            team_title: "<span>🛡️</span> Teambuilder & Randomizer",
+            team_desc: `
+                <p>Il cuore pulsante per creare la squadra perfetta. Puoi costruire squadre manualmente o fartele suggerire dal sistema.</p>
+                <ul>
+                    <li><strong>Analisi Difensiva Globale:</strong> Mentre aggiungi Pokémon ai tuoi 6 slot, la tabella sottostante si aggiornerà in tempo reale mostrandoti i "buchi" difensivi. Se la squadra ha 3 o più Pokémon deboli allo stesso tipo, si illuminerà di rosso!</li>
+                    <li><strong>Motore di Randomizzazione:</strong> Vuoi allenarti o fare una sfida tematica? Usa il bottone <em>"🎲 Random"</em> per generare una squadra casuale.</li>
+                    <li><strong>Filtri Random Avanzati:</strong> Puoi escludere i Leggendari, limitare la generazione a una specifica Regione (es. "Solo Kanto"), o forzare un range di Statistiche Base (BST).</li>
+                    <li><strong>Archivio Squadre:</strong> Una volta che hai creato il team perfetto, dagli un nome e salvalo. Rimarrà memorizzato nel tuo browser e potrai ricaricarlo in qualsiasi momento.</li>
+                </ul>`,
+            
+            warn_title: "Nota sul salvataggio dati:",
+            warn_desc: "Tutte le squadre, i Pokémon salvati nel Box e le preferenze di lingua vengono memorizzate localmente nel tuo browser tramite <em>LocalStorage</em>. Non serve registrazione! Se svuoti la cache o usi la navigazione in incognito, perderai i tuoi dati salvati."
+        },
+        en: {
+            nav_box: "📦 Box Manager", nav_dex: "📚 Advanced Pokedex", nav_team: "🛡️ Teambuilder", nav_guide: "📖 How it works",
+            page_title: "📖 User Manual",
+            intro: "Discover how to make the most of all the tools at your disposal to dominate the competitive scene.",
+            
+            box_title: "<span>📦</span> Box Manager (IV Evaluator)",
+            box_desc: `
+                <p>The Box Manager is the main tool for evaluating your caught or bred Pokémon. It tells you exactly which competitive role your Pokémon excels in based on its Nature and IVs.</p>
+                <ul>
+                    <li><strong>Data Entry:</strong> Search for your Pokémon, select its Nature, and enter its 6 IVs (0 to 31).</li>
+                    <li><strong>Ability Check:</strong> If the Current Ability is different from the ideal one, the system calculates if you need an <em>Ability Pill</em> (~$35k). It also warns you if the required ability is Hidden (HA).</li>
+                    <li><strong>Percentage Score:</strong> The system matches your data against optimal stats, giving you a 0% to 100% rating and the optimal role name.</li>
+                    <li><strong>Quick Actions:</strong> Save analyzed Pokémon to your personal Box, and with one click on "➕ Team", send them straight to the team simulator!</li>
+                </ul>`,
+
+            dex_title: "<span>📚</span> Advanced Pokédex",
+            dex_desc: `
+                <p>A visual database designed for competitive players. Quickly browse all Pokémon to find the perfect addition to your team.</p>
+                <ul>
+                    <li><strong>Quick Filters:</strong> Search by Name, Type, Competitive Tier (OU, UU, NU...), or even by Region (Generation).</li>
+                    <li><strong>Sorting:</strong> Sort Pokémon by Pokédex number or by their Base Stat Total (BST).</li>
+                    <li><strong>Quick Interaction:</strong> Click the "➕" button on the top right of any card to instantly add that Pokémon to your active team.</li>
+                    <li><strong>Detailed Cards:</strong> Click on any Pokémon in the grid (or the Box) to open its Detailed Analysis page.</li>
+                </ul>`,
+
+            det_title: "<span>🔍</span> Detailed Analysis & Pro Tips",
+            det_desc: `
+                <p>The "Details" page is an encyclopedia dedicated to a single Pokémon. It offers all the info you need to field it correctly.</p>
+                <ul>
+                    <li><strong>Full Profile:</strong> View Base Stats (BST), Egg Groups, Tiers, and all available abilities (including hidden ones).</li>
+                    <li><strong>Type Matchups:</strong> Shows exactly what types the Pokémon is weak to, resists, or is immune to defensively, and what it hits effectively (STAB) offensively. Click the colored type badges to open a pop-up with details for that specific type!</li>
+                    <li><strong>Pro Tips:</strong> A custom description on how to use that Pokémon in the current competitive meta.</li>
+                    <li><strong>Evolution Tree:</strong> An intuitive graphic showing the full evolution line and the requirements (Levels, Stones, Trades, Happiness) needed to evolve.</li>
+                </ul>`,
+
+            team_title: "<span>🛡️</span> Teambuilder & Randomizer",
+            team_desc: `
+                <p>The beating heart for creating the perfect team. Build teams manually or let the system suggest them.</p>
+                <ul>
+                    <li><strong>Global Defensive Analysis:</strong> As you fill your 6 slots, the table below updates in real-time showing defensive gaps. If your team has 3 or more Pokémon weak to the same type, it will flash red to warn you!</li>
+                    <li><strong>Randomizer Engine:</strong> Want to practice or do a theme challenge? Use the <em>"🎲 Random"</em> button to generate a random team.</li>
+                    <li><strong>Advanced Random Filters:</strong> Before rolling the dice, you can exclude Legendaries, restrict generation to a specific Region (e.g., "Kanto only"), or force a Base Stat (BST) range to avoid weak Pokémon.</li>
+                    <li><strong>Team Archive:</strong> Once you create the perfect team, name it and save it! It will be stored in your browser and can be loaded at any time.</li>
+                </ul>`,
+
+            warn_title: "Note on Data Saving:",
+            warn_desc: "All teams, Box-saved Pokémon, and language preferences are stored locally in your browser via <em>LocalStorage</em>. No registration required! If you clear your cache or use incognito mode, you will lose your saved data."
+        }
+    };
+
+    function applicaTraduzioniBase() {
+        document.getElementById(`lang-${lang}`).classList.add('active');
+        const t = dict[lang];
+        
+        document.getElementById('nav-box').textContent = t.nav_box;
+        document.getElementById('nav-dex').textContent = t.nav_dex;
+        document.getElementById('nav-team').textContent = t.nav_team;
+        document.getElementById('nav-guide').textContent = t.nav_guide;
+        
+        document.getElementById('page-title').textContent = t.page_title;
+        document.getElementById('intro-text').textContent = t.intro;
+        
+        document.getElementById('title-box').innerHTML = t.box_title;
+        document.getElementById('desc-box').innerHTML = t.box_desc;
+        
+        document.getElementById('title-dex').innerHTML = t.dex_title;
+        document.getElementById('desc-dex').innerHTML = t.dex_desc;
+        
+        document.getElementById('title-det').innerHTML = t.det_title;
+        document.getElementById('desc-det').innerHTML = t.det_desc;
+        
+        document.getElementById('title-team').innerHTML = t.team_title;
+        document.getElementById('desc-team').innerHTML = t.team_desc;
+        
+        document.getElementById('warn-title').textContent = t.warn_title;
+        document.getElementById('warn-desc').innerHTML = t.warn_desc;
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        applicaTraduzioniBase();
+
+        // Accensione automatica Menu
+        let paginaAttuale = window.location.pathname.split("/").pop();
+        if (paginaAttuale === "") paginaAttuale = "guida.html"; 
+
+        const linkMenu = document.querySelectorAll('.navbar a');
+        linkMenu.forEach(link => {
+            if (link.getAttribute('href') === paginaAttuale) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

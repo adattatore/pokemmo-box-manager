@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teambuilder - PokéMMO Box Manager</title>
+    <style>
+        /* --- STILI BASE CONDIVISI --- */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e272e; background-image: radial-gradient(#2f3640 1px, transparent 1px); background-size: 20px 20px; color: #d2dae2; padding: 20px; margin: 0; }
+        .container { max-width: 1200px; margin: 0 auto; background-color: rgba(44, 62, 80, 0.95); padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #34495e; }
+        h1 { text-align: center; color: #ffdd59; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        
+        /* --- BARRA DI NAVIGAZIONE (FIX CENTRAMENTO) --- */
+        .navbar { 
+            position: relative; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 15px; 
+            margin-bottom: 30px; 
+            background: rgba(0,0,0,0.3); 
+            padding: 15px; 
+            border-radius: 10px; 
+            border: 1px solid #485460; 
+            flex-wrap: wrap; 
+        }
+        .navbar a { color: #a4b0be; text-decoration: none; font-weight: bold; text-transform: uppercase; padding: 10px 20px; border-radius: 8px; transition: 0.3s; font-size: 14px; letter-spacing: 1px; }
+        .navbar a:hover { color: white; background: rgba(255,255,255,0.1); }
+        .navbar a.active { color: white; background: linear-gradient(135deg, #0fb9b1, #0a9992); box-shadow: 0 0 15px rgba(15, 185, 177, 0.4); }
+
+        /* SELETTORE LINGUA (FISSATO A DESTRA) */
+        .lang-switcher { 
+            position: absolute; 
+            right: 20px; 
+            display: flex; 
+            gap: 10px; 
+            background: rgba(0,0,0,0.5); 
+            padding: 5px 10px; 
+            border-radius: 20px; 
+            border: 1px solid rgba(255,255,255,0.1); 
+        }
+        .lang-btn { cursor: pointer; font-size: 18px; opacity: 0.4; transition: 0.2s; filter: grayscale(100%); }
+        .lang-btn:hover { opacity: 0.8; filter: grayscale(50%); transform: scale(1.1); }
+        .lang-btn.active { opacity: 1; filter: grayscale(0%); transform: scale(1.1); text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+
+        /* GRIGLIA SQUADRA (6 SLOT) */
+        .team-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 30px; }
+        .team-slot { background: rgba(0,0,0,0.4); border: 2px dashed rgba(255,255,255,0.2); border-radius: 15px; height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
+        .team-slot:hover { border-color: #0fb9b1; background: rgba(15, 185, 177, 0.1); transform: translateY(-5px); }
+        .slot-add-icon { font-size: 40px; color: rgba(255,255,255,0.2); font-weight: bold; }
+        .team-slot:hover .slot-add-icon { color: #0fb9b1; }
+
+        .team-slot.filled { border-style: solid; }
+        .team-slot.filled:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .slot-sprite { width: 80px; height: 80px; margin-bottom: 10px; filter: drop-shadow(0 4px 5px rgba(0,0,0,0.6)); transition: 0.3s; }
+        .team-slot.filled:hover .slot-sprite { transform: scale(1.1); }
+        .slot-name { font-weight: bold; color: white; text-transform: uppercase; font-size: 13px; text-shadow: 0 2px 3px #000; z-index: 2;}
+        
+        .slot-actions { position: absolute; top: 5px; right: 5px; display: flex; gap: 5px; z-index: 5; }
+        .slot-btn { border: none; border-radius: 5px; width: 25px; height: 25px; cursor: pointer; font-size: 12px; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.5); transition: 0.2s; }
+        .slot-btn:hover { transform: scale(1.15); filter: brightness(1.2); }
+        .btn-random { background: #9b59b6; color: white; }
+        .btn-swap { background: #f39c12; color: white; }
+        .btn-remove { background: #ff4757; color: white; }
+
+        /* --- LAYOUT A DUE COLONNE --- */
+        .bottom-panels { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+
+        /* PANNELLO ANALISI E HEADER */
+        .analysis-panel { background: rgba(0,0,0,0.4); padding: 25px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); }
+        .panel-title { font-size: 18px; color: white; text-transform: uppercase; border-bottom: 2px dashed rgba(255,255,255,0.2); padding-bottom: 10px; margin-top: 0; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        
+        /* CONTROLLI RANDOMIZZAZIONE */
+        .random-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-weight: normal; background: rgba(0,0,0,0.3); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
+        .leg-toggle-label { color: #a4b0be; font-size: 12px; display: flex; align-items: center; gap: 5px; cursor: pointer; margin-right: 5px; }
+        .leg-toggle-label:hover { color: white; }
+        .leg-checkbox { width: 14px; height: 14px; cursor: pointer; margin: 0; }
+        
+        /* Dropdown e Input per i filtri */
+        .random-filter-select { padding: 4px 8px; border-radius: 4px; border: 1px solid #485460; background: rgba(0,0,0,0.5); color: white; font-size: 12px; outline: none; cursor: pointer; }
+        .random-filter-select:focus { border-color: #ffdd59; }
+        .bst-input { width: 45px; padding: 4px; border-radius: 4px; border: 1px solid #485460; background: rgba(0,0,0,0.5); color: white; font-size: 12px; outline: none; text-align: center; }
+        .bst-input:focus { border-color: #ffdd59; }
+        
+        .btn-random-all { background: #9b59b6; color: white; border: none; padding: 5px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 13px; transition: 0.2s; margin-left: 5px; text-transform: uppercase; }
+        .btn-random-all:hover { background: #8e44ad; transform: translateY(-2px); }
+        .btn-clear-all { background: #ff4757; color: white; border: none; padding: 5px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 13px; transition: 0.2s; text-transform: uppercase; }
+        .btn-clear-all:hover { background: #ff6b81; transform: translateY(-2px); }
+
+        .type-matchup-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+        .matchup-card { background: rgba(0,0,0,0.5); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
+        .matchup-header { padding: 5px; text-align: center; font-weight: bold; font-size: 11px; text-transform: uppercase; color: white; text-shadow: 0 1px 2px #000; }
+        .matchup-stats { display: flex; justify-content: space-between; padding: 8px; background: rgba(255,255,255,0.02); font-size: 13px; }
+        .dot-weak { display: inline-block; width: 10px; height: 10px; background: #ff4757; border-radius: 50%; box-shadow: 0 0 5px #ff4757; }
+        .dot-res { display: inline-block; width: 10px; height: 10px; background: #2ed573; border-radius: 50%; box-shadow: 0 0 5px #2ed573; }
+        .dot-imm { display: inline-block; width: 10px; height: 10px; background: #3498db; border-radius: 50%; box-shadow: 0 0 5px #3498db; border: 1px solid white;}
+
+        /* PANNELLO SQUADRE SALVATE */
+        .saved-teams-panel { background: rgba(0,0,0,0.4); padding: 25px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; }
+        .save-controls { display: flex; gap: 10px; margin-bottom: 20px; }
+        .save-input { flex: 1; padding: 10px; border-radius: 8px; border: 2px solid #485460; background-color: rgba(0,0,0,0.5); color: white; font-size: 13px; outline: none; transition: 0.3s; }
+        .save-input:focus { border-color: #ffdd59; }
+        .save-btn { background: #20bf6b; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 13px; text-transform: uppercase; }
+        .save-btn:hover { background: #2ed573; transform: translateY(-2px); }
+
+        .saved-teams-list { flex: 1; overflow-y: auto; max-height: 400px; display: flex; flex-direction: column; gap: 15px; padding-right: 5px; }
+        .saved-team-item { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 15px; transition: 0.2s; }
+        .saved-team-item:hover { border-color: #ffdd59; background: rgba(255, 221, 89, 0.05); }
+        .saved-team-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .saved-team-name { font-weight: bold; color: #ffdd59; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .saved-team-actions { display: flex; gap: 8px; }
+        .action-btn { padding: 5px 10px; border: none; border-radius: 5px; font-weight: bold; font-size: 11px; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
+        .btn-load { background: #0fb9b1; color: white; }
+        .btn-load:hover { background: #1abc9c; transform: translateY(-2px); }
+        .btn-delete-team { background: #ff4757; color: white; }
+        .btn-delete-team:hover { background: #ff6b81; transform: translateY(-2px); }
+
+        .saved-team-sprites { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; background: rgba(0,0,0,0.5); padding: 5px; border-radius: 8px; }
+        .mini-sprite { width: 100%; aspect-ratio: 1/1; background: rgba(255,255,255,0.05); border-radius: 5px; object-fit: contain; }
+
+        /* MODALE RICERCA E ALERT */
+        .modal-overlay, .custom-alert-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: #1e272e; border: 2px solid rgba(255,255,255,0.2); border-radius: 15px; width: 90%; max-width: 600px; height: 80vh; display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.8); overflow: hidden; }
+        .modal-header { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); position: relative; }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #a4b0be; cursor: pointer; transition: 0.3s; line-height: 1; }
+        .modal-close:hover { color: #ff4757; transform: scale(1.2); }
+        .modal-search { width: 80%; padding: 12px; border-radius: 8px; border: 2px solid #0fb9b1; background-color: rgba(0,0,0,0.5); color: white; font-size: 16px; outline: none; margin-top: 10px; }
+        .modal-results { flex: 1; overflow-y: auto; padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; align-content: flex-start; }
+        .result-item { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; }
+        .result-item:hover { background: rgba(15, 185, 177, 0.2); border-color: #0fb9b1; transform: translateY(-3px); }
+        .result-sprite { width: 50px; height: 50px; margin-bottom: 5px; }
+
+        .custom-alert-box { background: #1e272e; border: 2px solid #ffdd59; border-radius: 15px; padding: 30px; max-width: 350px; text-align: center; box-shadow: 0 15px 40px rgba(255, 221, 89, 0.2); transform: translateY(20px); transition: transform 0.3s ease; }
+        .custom-alert-icon { font-size: 45px; margin-bottom: 10px; display: block; }
+        .custom-alert-msg { color: white; font-size: 16px; margin-bottom: 25px; line-height: 1.5; }
+        .custom-alert-btn { background: #ffdd59; color: #1e272e; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; font-size: 14px; }
+        .custom-alert-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 221, 89, 0.4); }
+
+        /* Stile per i tipi sotto il nome nello slot */
+        .slot-types { display: flex; gap: 4px; margin-top: 5px; z-index: 2; }
+        .mini-type-badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; color: white; text-transform: uppercase; font-weight: bold; text-shadow: 0 1px 2px #000; border: 1px solid rgba(255,255,255,0.1); }
+        .slot-name { font-size: 12px; margin-top: 2px; }
+
+        @media (max-width: 900px) { 
+            .team-grid { grid-template-columns: repeat(3, 1fr); } 
+            .bottom-panels { grid-template-columns: 1fr; } 
+            .modal-results { grid-template-columns: repeat(2, 1fr); } 
+            .panel-title { flex-direction: column; align-items: flex-start; }
+            .random-controls { width: 100%; justify-content: flex-start; }
+            .navbar { flex-direction: column; text-align: center; }
+            .lang-switcher { position: static; margin: 10px auto 0 auto; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="navbar">
+        <a href="index.html" id="nav-box">📦 Box Manager</a>
+        <a href="pokedex.html" onclick="sessionStorage.clear()" id="nav-dex">📚 Pokédex Avanzato</a>
+        <a href="teambuilder.html" class="active" id="nav-team">🛡️ Teambuilder</a>
+        <a href="guida.html" id="nav-guide">📖 Come Funziona</a>
+        
+        <div class="lang-switcher">
+            <span class="lang-btn" id="lang-it" onclick="setLang('it')" title="Italiano">🇮🇹</span>
+            <span class="lang-btn" id="lang-en" onclick="setLang('en')" title="English">🇬🇧</span>
+        </div>
+    </div>
+
+    <h1 id="page-title">🛡️ Simulatore Squadra</h1>
+
+    <div class="team-grid" id="team-grid"></div>
+
+    <div class="bottom-panels">
+        
+        <div class="analysis-panel">
+            <h2 class="panel-title">
+                <span id="title-analysis">📊 Analisi Difensiva Squadra</span>
+                
+                <div class="random-controls">
+                    <select id="random-region-filter" class="random-filter-select"></select>
+
+                    <label class="leg-toggle-label">
+                        <input type="checkbox" id="toggle-legendaries" class="leg-checkbox"> <span id="lbl-leg">Leggendari</span>
+                    </label>
+                    <span style="color: #a4b0be; font-size: 12px;">BST:</span>
+                    <input type="number" id="min-bst" value="450" min="10" max="800" class="bst-input" title="Minimo BST">
+                    <span style="color: #a4b0be; font-size: 12px;">-</span>
+                    <input type="number" id="max-bst" value="650" min="10" max="800" class="bst-input" title="Massimo BST">
+                    
+                    <button onclick="generaSquadraCasuale()" class="btn-random-all" id="btn-rand-all">🎲 Random</button>
+                    <button onclick="svuotaSquadra()" class="btn-clear-all" id="btn-clear-all">🗑️ Svuota</button>
+                </div>
+            </h2>
+            <div style="font-size: 12px; color: #a4b0be; margin-bottom: 15px; text-align: center;">
+                <span class="dot-weak"></span> <span id="lbl-weak">Debolezza</span> &nbsp;|&nbsp; 
+                <span class="dot-res"></span> <span id="lbl-res">Resistenza</span> &nbsp;|&nbsp; 
+                <span class="dot-imm"></span> <span id="lbl-imm">Immunità</span>
+            </div>
+            <div class="type-matchup-grid" id="matchup-grid"></div>
+        </div>
+
+        <div class="saved-teams-panel">
+            <h2 class="panel-title" id="title-archive">💾 Archivio Squadre</h2>
+            <div class="save-controls">
+                <input type="text" id="team-name-input" class="save-input" placeholder="Nome della squadra..." autocomplete="off">
+                <button class="save-btn" onclick="salvaNeiPreferiti()" id="btn-save">Salva</button>
+            </div>
+            <div class="saved-teams-list" id="saved-teams-list"></div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal-overlay" id="search-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="modal-close" onclick="chiudiModal()">&times;</span>
+            <h2 style="margin: 0; color: white; font-size: 20px;" id="mod-title-search">Scegli un Pokémon</h2>
+            <input type="text" class="modal-search" id="pkmn-search-input" placeholder="Scrivi il nome..." autocomplete="off">
+        </div>
+        <div class="modal-results" id="modal-results"></div>
+    </div>
+</div>
+
+<div class="custom-alert-overlay" id="custom-alert">
+    <div class="custom-alert-box" id="custom-alert-box">
+        <span class="custom-alert-icon" id="custom-alert-emoji">⚠️</span>
+        <div class="custom-alert-msg" id="custom-alert-text">Messaggio</div>
+        <button class="custom-alert-btn" onclick="chiudiCustomAlert()">OK</button>
+    </div>
+</div>
+
+<script>
+    // --- GESTIONE LINGUA ---
+    let lang = localStorage.getItem('pokemmo_lang') || 'it';
+
+    function setLang(l) {
+        localStorage.setItem('pokemmo_lang', l);
+        location.reload();
+    }
+
+    const dict = {
+        it: {
+            nav_box: "📦 Box Manager", nav_dex: "📚 Pokédex Avanzato", nav_team: "🛡️ Teambuilder", nav_guide: "📖 Come Funziona",
+            title: "🛡️ Simulatore Squadra", title_analysis: "📊 Analisi Difensiva Squadra", title_archive: "💾 Archivio Squadre",
+            lbl_leg: "Leggendari", btn_rand_all: "🎲 Random", btn_clear_all: "🗑️ Svuota", btn_save: "Salva",
+            lbl_weak: "Debolezza", lbl_res: "Resistenza", lbl_imm: "Immunità",
+            ph_team: "Nome della squadra...", ph_search: "Scrivi il nome...", mod_title_search: "Scegli un Pokémon",
+            err_name: "Devi inserire un nome per salvare la squadra!", err_empty: "Non puoi salvare una squadra vuota!",
+            err_filters: "<b>Filtri troppo restrittivi!</b><br><br>Non ci sono abbastanza Pokémon unici nel database per questa regione o con queste statistiche. Prova ad allargare il range o a cambiare regione.",
+            err_notfound: "Nessun Pokémon trovato con questi filtri!", save_ok: "è stata salvata nell'archivio!",
+            no_team: "Nessuna squadra in archivio.", no_team_anal: "Aggiungi dei Pokémon per vedere l'analisi delle debolezze.",
+            btn_load: "Carica",
+            reg_all: "🌐 Tutte le Regioni", reg_1: "🔴 Kanto (G1)", reg_2: "🟡 Johto (G2)", reg_3: "🟢 Hoenn (G3)", reg_4: "🔵 Sinnoh (G4)", reg_5: "⚪ Unima (G5)"
+        },
+        en: {
+            nav_box: "📦 Box Manager", nav_dex: "📚 Advanced Pokedex", nav_team: "🛡️ Teambuilder", nav_guide: "📖 How it works",
+            title: "🛡️ Team Simulator", title_analysis: "📊 Defensive Analysis", title_archive: "💾 Team Archive",
+            lbl_leg: "Legendaries", btn_rand_all: "🎲 Random", btn_clear_all: "🗑️ Clear", btn_save: "Save",
+            lbl_weak: "Weakness", lbl_res: "Resistance", lbl_imm: "Immunity",
+            ph_team: "Team name...", ph_search: "Type a name...", mod_title_search: "Choose a Pokémon",
+            err_name: "You must enter a name to save the team!", err_empty: "You cannot save an empty team!",
+            err_filters: "<b>Filters too strict!</b><br><br>Not enough unique Pokémon in the database for this region or with these stats. Try widening the range.",
+            err_notfound: "No Pokémon found with these filters!", save_ok: "has been saved to the archive!",
+            no_team: "No teams in archive.", no_team_anal: "Add Pokémon to see the weakness analysis.",
+            btn_load: "Load",
+            reg_all: "🌐 All Regions", reg_1: "🔴 Kanto (G1)", reg_2: "🟡 Johto (G2)", reg_3: "🟢 Hoenn (G3)", reg_4: "🔵 Sinnoh (G4)", reg_5: "⚪ Unova (G5)"
+        }
+    };
+
+    const traduzioniTipi = {
+        it: { normal: 'Normale', fire: 'Fuoco', water: 'Acqua', electric: 'Elettro', grass: 'Erba', ice: 'Ghiaccio', fighting: 'Lotta', poison: 'Veleno', ground: 'Terra', flying: 'Volante', psychic: 'Psico', bug: 'Coleottero', rock: 'Roccia', ghost: 'Spettro', dragon: 'Drago', dark: 'Buio', steel: 'Acciaio', fairy: 'Folletto' },
+        en: { normal: 'Normal', fire: 'Fire', water: 'Water', electric: 'Electric', grass: 'Grass', ice: 'Ice', fighting: 'Fighting', poison: 'Poison', ground: 'Ground', flying: 'Flying', psychic: 'Psychic', bug: 'Bug', rock: 'Rock', ghost: 'Ghost', dragon: 'Dragon', dark: 'Dark', steel: 'Steel', fairy: 'Fairy' }
+    };
+
+    function traduciTipo(tipoEng) {
+        return traduzioniTipi[lang][tipoEng.toLowerCase()] || tipoEng;
+    }
+
+    function applicaTraduzioniBase() {
+        document.getElementById(`lang-${lang}`).classList.add('active');
+        const t = dict[lang];
+        
+        document.getElementById('nav-box').textContent = t.nav_box;
+        document.getElementById('nav-dex').textContent = t.nav_dex;
+        document.getElementById('nav-team').textContent = t.nav_team;
+        document.getElementById('nav-guide').textContent = t.nav_guide;
+        
+        document.getElementById('page-title').textContent = t.title;
+        document.getElementById('title-analysis').textContent = t.title_analysis;
+        document.getElementById('title-archive').textContent = t.title_archive;
+        document.getElementById('lbl-leg').textContent = t.lbl_leg;
+        document.getElementById('btn-rand-all').textContent = t.btn_rand_all;
+        document.getElementById('btn-clear-all').textContent = t.btn_clear_all;
+        document.getElementById('btn-save').textContent = t.btn_save;
+        document.getElementById('lbl-weak').textContent = t.lbl_weak;
+        document.getElementById('lbl-res').textContent = t.lbl_res;
+        document.getElementById('lbl-imm').textContent = t.lbl_imm;
+        
+        document.getElementById('team-name-input').placeholder = t.ph_team;
+        document.getElementById('pkmn-search-input').placeholder = t.ph_search;
+        document.getElementById('mod-title-search').textContent = t.mod_title_search;
+
+        // Popola Filtro Regione
+        document.getElementById('random-region-filter').innerHTML = `
+            <option value="all">${t.reg_all}</option>
+            <option value="1">${t.reg_1}</option>
+            <option value="2">${t.reg_2}</option>
+            <option value="3">${t.reg_3}</option>
+            <option value="4">${t.reg_4}</option>
+            <option value="5">${t.reg_5}</option>
+        `;
+    }
+
+    // --- FUNZIONI DI SUPPORTO E VARIABILI GLOBALI ---
+    const coloriTipi = { normal: '#A8A77A', fire: '#EE8130', water: '#6390F0', electric: '#F7D02C', grass: '#7AC74C', ice: '#96D9D6', fighting: '#C22E28', poison: '#A33EA1', ground: '#E2BF65', flying: '#A98FF3', psychic: '#F95587', bug: '#A6B91A', rock: '#B6A136', ghost: '#735797', dragon: '#6F35FC', dark: '#705898', steel: '#B7B7CE', fairy: '#D685AD' };
+    const typeChart = { normal: { rock: 0.5, ghost: 0, steel: 0.5 }, fire: { fire: 0.5, water: 0.5, grass: 2, ice: 2, bug: 2, rock: 0.5, dragon: 0.5, steel: 2 }, water: { fire: 2, water: 0.5, grass: 0.5, ground: 2, rock: 2, dragon: 0.5 }, grass: { fire: 0.5, water: 2, grass: 0.5, poison: 0.5, ground: 2, flying: 0.5, bug: 0.5, rock: 2, dragon: 0.5, steel: 0.5 }, electric: { water: 2, grass: 0.5, electric: 0.5, ground: 0, flying: 2, dragon: 0.5 }, ice: { fire: 0.5, water: 0.5, grass: 2, ice: 0.5, ground: 2, flying: 2, dragon: 2, steel: 0.5 }, fighting: { normal: 2, ice: 2, poison: 0.5, flying: 0.5, psychic: 0.5, bug: 0.5, rock: 2, ghost: 0, dark: 2, steel: 2, fairy: 0.5 }, poison: { grass: 2, poison: 0.5, ground: 0.5, rock: 0.5, ghost: 0.5, steel: 0, fairy: 2 }, ground: { fire: 2, grass: 0.5, electric: 2, poison: 2, flying: 0, bug: 0.5, rock: 2, steel: 2 }, flying: { grass: 2, electric: 0.5, fighting: 2, bug: 2, rock: 0.5, steel: 0.5 }, psychic: { fighting: 2, poison: 2, psychic: 0.5, dark: 0, steel: 0.5 }, bug: { fire: 0.5, grass: 2, fighting: 0.5, poison: 0.5, flying: 0.5, psychic: 2, ghost: 0.5, dark: 2, steel: 0.5, fairy: 0.5 }, rock: { fire: 2, ice: 2, fighting: 0.5, ground: 0.5, flying: 2, bug: 2, steel: 0.5 }, ghost: { normal: 0, psychic: 2, ghost: 2, dark: 0.5 }, dragon: { dragon: 2, steel: 0.5, fairy: 0 }, dark: { fighting: 0.5, psychic: 2, ghost: 2, dark: 0.5, fairy: 0.5 }, steel: { fire: 0.5, water: 0.5, electric: 0.5, ice: 2, rock: 2, steel: 0.5, fairy: 2 }, fairy: { fire: 0.5, fighting: 2, poison: 0.5, dragon: 2, dark: 2, steel: 0.5 } };
+
+    const legendari = ['articuno', 'zapdos', 'moltres', 'mewtwo', 'mew', 'raikou', 'entei', 'suicune', 'lugia', 'ho-oh', 'celebi', 'regirock', 'regice', 'registeel', 'latias', 'latios', 'kyogre', 'groudon', 'rayquaza', 'jirachi', 'deoxys', 'uxie', 'mesprit', 'azelf', 'dialga', 'palkia', 'heatran', 'regigigas', 'giratina', 'cresselia', 'phione', 'manaphy', 'darkrai', 'shaymin', 'arceus', 'victini', 'cobalion', 'terrakion', 'virizion', 'tornadus', 'thundurus', 'reshiram', 'zekrom', 'landorus', 'kyurem', 'keldeo', 'meloetta', 'genesect'];
+
+    let interoDatabase = []; 
+    let mioTeam = [null, null, null, null, null, null]; 
+    let slotSelezionato = -1;
+    let archiviSquadre = [];
+    let dexIdMap = {};
+
+    async function preloadDexIds() {
+        try {
+            const res = await fetch('https://pokeapi.co/api/v2/pokemon-species?limit=649');
+            const data = await res.json();
+            data.results.forEach((s, index) => { dexIdMap[s.name] = index + 1; });
+        } catch(e) {}
+    }
+
+    function ottieniRegione(pokemonName) {
+        let baseName = pokemonName.toLowerCase().replace(/[^a-z0-9-]/g, '');
+        if(baseName.includes('mime')) baseName = 'mr-mime';
+        else if(baseName.includes('ho-oh')) baseName = 'ho-oh';
+        else if(baseName.includes('porygon')) baseName = baseName.includes('z') ? 'porygon-z' : (baseName.includes('2') ? 'porygon2' : 'porygon');
+        else baseName = baseName.split('-')[0]; 
+        
+        let id = dexIdMap[baseName] || 9999;
+        if(id >= 1 && id <= 151) return '1'; 
+        if(id >= 152 && id <= 251) return '2'; 
+        if(id >= 252 && id <= 386) return '3'; 
+        if(id >= 387 && id <= 493) return '4'; 
+        if(id >= 494 && id <= 649) return '5'; 
+        return 'all';
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+        applicaTraduzioniBase();
+        await preloadDexIds();
+
+        try {
+            const res = await fetch('pokemmo_roles.json');
+            interoDatabase = await res.json();
+            interoDatabase.sort((a,b) => a.pokemon.localeCompare(b.pokemon));
+
+            const teamSalvato = localStorage.getItem('pokeMMOTeam');
+            if (teamSalvato) {
+                try {
+                    let teamNomi = JSON.parse(teamSalvato);
+                    mioTeam = Array(6).fill(null).map((_, i) => teamNomi[i] ? interoDatabase.find(p => p.pokemon === teamNomi[i]) || null : null);
+                } catch(err) { mioTeam = [null, null, null, null, null, null]; }
+            }
+
+            const archivioDb = localStorage.getItem('pokeMMOArchivioTeams');
+            if (archivioDb) { try { archiviSquadre = JSON.parse(archivioDb); } catch(e) { archiviSquadre = []; } }
+
+            disegnaSquadra(); 
+            analizzaSquadra();
+            aggiornaListaPreferiti();
+
+            document.getElementById('pkmn-search-input').addEventListener('input', filtraRisultatiModale);
+        } catch (e) {}
+    });
+
+    function mostraCustomAlert(messaggio, icona = '⚠️') {
+        document.getElementById('custom-alert-emoji').textContent = icona;
+        document.getElementById('custom-alert-text').innerHTML = messaggio;
+        const modal = document.getElementById('custom-alert');
+        const box = document.getElementById('custom-alert-box');
+        modal.style.display = 'flex';
+        setTimeout(() => { modal.style.opacity = '1'; box.style.transform = 'translateY(0)'; }, 10);
+    }
+    function chiudiCustomAlert() {
+        const modal = document.getElementById('custom-alert');
+        const box = document.getElementById('custom-alert-box');
+        modal.style.opacity = '0'; box.style.transform = 'translateY(20px)';
+        setTimeout(() => { modal.style.display = 'none'; }, 300);
+    }
+    function pulisciNomeSprite(nome) { return nome.toLowerCase().replace('-male', '').replace('-female', '-f').replace(/[^a-z0-9]/g, '').trim(); }
+
+    function calcolaBST(p) {
+        if(!p.base_stats) return 0;
+        return p.base_stats.hp + p.base_stats.atk + p.base_stats.def + p.base_stats.spa + p.base_stats.spd + (p.base_stats.spe || p.base_stats.speed || 0);
+    }
+
+    function salvaSquadraCorrenteMemoria() {
+        localStorage.setItem('pokeMMOTeam', JSON.stringify(mioTeam.map(p => p ? p.pokemon : null)));
+        analizzaSquadra();
+    }
+    
+    function svuotaSquadra() { 
+        mioTeam = [null, null, null, null, null, null]; 
+        salvaSquadraCorrenteMemoria(); 
+        disegnaSquadra(); 
+    }
+
+    function ottieniPokemonCasualeUnico() {
+        if (interoDatabase.length === 0) return null;
+        
+        const includiLeggendari = document.getElementById('toggle-legendaries').checked;
+        const minBst = parseInt(document.getElementById('min-bst').value) || 0;
+        const maxBst = parseInt(document.getElementById('max-bst').value) || 9999;
+        const regionFiltro = document.getElementById('random-region-filter').value;
+        
+        const candidatiValidi = interoDatabase.filter(pkmn => {
+            if (mioTeam.some(p => p && p.pokemon === pkmn.pokemon)) return false;
+            
+            let nomeSafe = pkmn.pokemon.toLowerCase();
+            let nomeBase = nomeSafe.split('-')[0];
+            if(nomeSafe.includes('ho-oh')) nomeBase = 'ho-oh';
+            if (!includiLeggendari && legendari.includes(nomeBase)) return false;
+            
+            let bst = calcolaBST(pkmn);
+            if (bst < minBst || bst > maxBst) return false;
+
+            if (regionFiltro !== 'all' && ottieniRegione(pkmn.pokemon) !== regionFiltro) return false;
+            
+            return true;
+        });
+
+        if (candidatiValidi.length === 0) return null;
+        return candidatiValidi[Math.floor(Math.random() * candidatiValidi.length)];
+    }
+
+    function generaSquadraCasuale() {
+        if (interoDatabase.length === 0) return;
+        const t = dict[lang];
+        let backupTeam = [...mioTeam]; 
+        mioTeam = [null, null, null, null, null, null]; 
+        
+        let fallito = false;
+        for (let i = 0; i < 6; i++) { 
+            let p = ottieniPokemonCasualeUnico();
+            if (!p) { fallito = true; break; }
+            mioTeam[i] = p;
+        }
+
+        if (fallito) {
+            mioTeam = backupTeam; 
+            mostraCustomAlert(t.err_filters);
+            return;
+        }
+
+        salvaSquadraCorrenteMemoria();
+        disegnaSquadra();
+    }
+
+    function randomizzaSlot(index, event) {
+        event.stopPropagation();
+        if (interoDatabase.length === 0) return;
+        const t = dict[lang];
+        
+        let backup = mioTeam[index];
+        mioTeam[index] = null; 
+        
+        let p = ottieniPokemonCasualeUnico();
+        if (!p) {
+            mioTeam[index] = backup;
+            mostraCustomAlert(t.err_notfound, "🎲");
+            return;
+        }
+        
+        mioTeam[index] = p;
+        salvaSquadraCorrenteMemoria();
+        disegnaSquadra();
+    }
+
+    function disegnaSquadra() {
+        const grid = document.getElementById('team-grid'); grid.innerHTML = '';
+        for (let i = 0; i < 6; i++) {
+            const pkmn = mioTeam[i]; const slot = document.createElement('div');
+            if (pkmn) {
+                const color1 = coloriTipi[pkmn.types[0].toLowerCase()] || '#1e272e'; 
+                const color2 = pkmn.types.length > 1 ? coloriTipi[pkmn.types[1].toLowerCase()] : color1;
+                const spriteId = pulisciNomeSprite(pkmn.pokemon);
+                
+                slot.className = 'team-slot filled'; 
+                slot.style.background = `linear-gradient(135deg, ${color1}, ${color2})`; 
+                slot.style.borderColor = color1;
+                
+                slot.onclick = () => window.location.href = `dettaglio.html?id=${pkmn.pokemon.toLowerCase()}`;
+                
+                const typesHtml = pkmn.types.map(t => 
+                    `<span class="mini-type-badge" style="background-color: ${coloriTipi[t.toLowerCase()]}">${traduciTipo(t)}</span>`
+                ).join('');
+
+                slot.innerHTML = `
+                    <div class="slot-actions">
+                        <button class="slot-btn btn-random" onclick="randomizzaSlot(${i}, event)" title="Random">🎲</button>
+                        <button class="slot-btn btn-swap" onclick="cambiaPokemon(${i}, event)" title="Swap">🔄</button>
+                        <button class="slot-btn btn-remove" onclick="rimuoviPokemon(${i}, event)" title="Remove">✖</button>
+                    </div>
+                    <img src="https://play.pokemonshowdown.com/sprites/gen5ani/${spriteId}.gif" class="slot-sprite" onerror="this.src='https://play.pokemonshowdown.com/sprites/dex/${spriteId}.png'">
+                    <div class="slot-name">${pkmn.pokemon}</div>
+                    <div class="slot-types">${typesHtml}</div>
+                `;
+            } else {
+                slot.className = 'team-slot'; 
+                slot.innerHTML = `
+                    <div class="slot-actions">
+                        <button class="slot-btn btn-random" onclick="randomizzaSlot(${i}, event)" title="Random">🎲</button>
+                    </div>
+                    <div class="slot-add-icon">+</div>
+                `;
+                slot.onclick = () => apriModaleSelezione(i);
+            }
+            grid.appendChild(slot);
+        }
+    }
+
+    function cambiaPokemon(index, event) { event.stopPropagation(); apriModaleSelezione(index); }
+    function rimuoviPokemon(index, event) { event.stopPropagation(); mioTeam[index] = null; salvaSquadraCorrenteMemoria(); disegnaSquadra(); }
+
+    function apriModaleSelezione(index) {
+        slotSelezionato = index; document.getElementById('pkmn-search-input').value = '';
+        filtraRisultatiModale(); document.getElementById('search-modal').style.display = 'flex';
+        setTimeout(() => document.getElementById('pkmn-search-input').focus(), 100);
+    }
+    function chiudiModal() { document.getElementById('search-modal').style.display = 'none'; }
+
+    function filtraRisultatiModale() {
+        const query = document.getElementById('pkmn-search-input').value.toLowerCase();
+        const container = document.getElementById('modal-results'); container.innerHTML = '';
+        interoDatabase.filter(p => p.pokemon.toLowerCase().includes(query)).slice(0, 50).forEach(p => {
+            const div = document.createElement('div'); div.className = 'result-item'; div.onclick = () => selezionaPokemon(p);
+            div.innerHTML = `<img src="https://play.pokemonshowdown.com/sprites/dex/${pulisciNomeSprite(p.pokemon)}.png" class="result-sprite"><span style="color: white; font-weight: bold; font-size: 12px;">${p.pokemon}</span>`;
+            container.appendChild(div);
+        });
+    }
+    function selezionaPokemon(pkmnData) { mioTeam[slotSelezionato] = pkmnData; salvaSquadraCorrenteMemoria(); disegnaSquadra(); chiudiModal(); }
+
+    function salvaNeiPreferiti() {
+        const t = dict[lang];
+        const inputNome = document.getElementById('team-name-input');
+        const nome = inputNome.value.trim();
+        
+        if(!nome) { mostraCustomAlert(t.err_name); return; }
+        if(mioTeam.every(p => p === null)) { mostraCustomAlert(t.err_empty); return; }
+
+        const arrayNomi = mioTeam.map(p => p ? p.pokemon : null);
+        archiviSquadre.push({ nome: nome, team: arrayNomi });
+        localStorage.setItem('pokeMMOArchivioTeams', JSON.stringify(archiviSquadre));
+        
+        inputNome.value = '';
+        aggiornaListaPreferiti();
+        mostraCustomAlert(`La squadra "<b>${nome}</b>" ${t.save_ok}`, '💾');
+    }
+
+    function caricaDaPreferiti(index) {
+        const squadraSalvata = archiviSquadre[index].team;
+        mioTeam = squadraSalvata.map(nome => nome ? interoDatabase.find(p => p.pokemon === nome) || null : null);
+        salvaSquadraCorrenteMemoria(); 
+        disegnaSquadra();
+    }
+
+    function eliminaDaPreferiti(index) {
+        archiviSquadre.splice(index, 1);
+        localStorage.setItem('pokeMMOArchivioTeams', JSON.stringify(archiviSquadre));
+        aggiornaListaPreferiti();
+    }
+
+    function aggiornaListaPreferiti() {
+        const container = document.getElementById('saved-teams-list');
+        const t = dict[lang];
+        container.innerHTML = '';
+        
+        if(archiviSquadre.length === 0) {
+            container.innerHTML = `<div style="color:#a4b0be; font-size:13px; text-align:center; padding:20px;">${t.no_team}</div>`;
+            return;
+        }
+
+        archiviSquadre.forEach((sq, i) => {
+            const div = document.createElement('div');
+            div.className = 'saved-team-item';
+
+            let iconeHtml = sq.team.map(nomePkmn => {
+                if(nomePkmn) {
+                    const spriteId = pulisciNomeSprite(nomePkmn);
+                    return `<img src="https://play.pokemonshowdown.com/sprites/dex/${spriteId}.png" class="mini-sprite" title="${nomePkmn}" onerror="this.style.display='none'">`;
+                }
+                return `<div class="mini-sprite"></div>`;
+            }).join('');
+
+            div.innerHTML = `
+                <div class="saved-team-header">
+                    <span class="saved-team-name">${sq.nome}</span>
+                    <div class="saved-team-actions">
+                        <button class="action-btn btn-load" onclick="caricaDaPreferiti(${i})">${t.btn_load}</button>
+                        <button class="action-btn btn-delete-team" onclick="eliminaDaPreferiti(${i})">✖</button>
+                    </div>
+                </div>
+                <div class="saved-team-sprites">
+                    ${iconeHtml}
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function analizzaSquadra() {
+        const grid = document.getElementById('matchup-grid'); grid.innerHTML = '';
+        const t = dict[lang];
+        if(mioTeam.every(p => p === null)) { grid.innerHTML = `<div style='grid-column: 1/-1; text-align:center; color:#a4b0be; padding: 20px;'>${t.no_team_anal}</div>`; return; }
+        
+        let analisi = {}; Object.keys(typeChart).forEach(tipo => analisi[tipo] = { weak: 0, res: 0, imm: 0 });
+        mioTeam.forEach(pkmn => {
+            if(!pkmn) return;
+            let moltiplicatori = {}; Object.keys(typeChart).forEach(tipo => moltiplicatori[tipo] = 1);
+            let tipiLower = pkmn.types.map(t => t.toLowerCase());
+            
+            Object.keys(typeChart).forEach(atkType => { 
+                tipiLower.forEach(defType => { 
+                    if(typeChart[atkType][defType] !== undefined) moltiplicatori[atkType] *= typeChart[atkType][defType]; 
+                }); 
+            });
+            Object.entries(moltiplicatori).forEach(([atkType, mult]) => { if (mult > 1) analisi[atkType].weak++; else if (mult === 0) analisi[atkType].imm++; else if (mult < 1) analisi[atkType].res++; });
+        });
+
+        Object.keys(typeChart).forEach(tipo => {
+            const data = analisi[tipo];
+            let weakDots = Array(data.weak).fill('<span class="dot-weak"></span>').join('') || '-';
+            let defDots = Array(data.res).fill('<span class="dot-res"></span>').join('') + Array(data.imm).fill('<span class="dot-imm"></span>').join('') || '-';
+            let allarme = (data.weak >= 3 && (data.res + data.imm) === 0) ? 'box-shadow: 0 0 15px rgba(255, 71, 87, 0.8); border: 2px solid #ff4757;' : '';
+            
+            const card = document.createElement('div'); card.className = 'matchup-card'; card.style.cssText = allarme;
+            // Traduzione del tipo nell'header dell'analisi
+            card.innerHTML = `<div class="matchup-header" style="background-color: ${coloriTipi[tipo]}">${traduciTipo(tipo)}</div><div class="matchup-stats"><div class="stat-weak">${weakDots}</div><div class="stat-res">${defDots}</div></div>`;
+            grid.appendChild(card);
+        });
+    }
+</script>
+</body>
+</html>

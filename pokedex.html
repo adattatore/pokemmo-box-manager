@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokédex Avanzato - PokéMMO Box Manager</title>
+    <style>
+        /* --- STILI BASE CONDIVISI --- */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e272e; background-image: radial-gradient(#2f3640 1px, transparent 1px); background-size: 20px 20px; color: #d2dae2; padding: 20px; margin: 0; line-height: 1.6; }
+        .container { max-width: 1100px; margin: 0 auto; background-color: rgba(44, 62, 80, 0.95); padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #34495e; }
+        h1 { text-align: center; color: #ff4757; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(255, 71, 87, 0.4); }
+        
+        /* --- BARRA DI NAVIGAZIONE (FIX CENTRAMENTO) --- */
+        .navbar { 
+            position: relative; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 15px; 
+            margin-bottom: 30px; 
+            background: rgba(0,0,0,0.3); 
+            padding: 15px; 
+            border-radius: 10px; 
+            border: 1px solid #485460; 
+            flex-wrap: wrap; 
+        }
+        .navbar a { color: #a4b0be; text-decoration: none; font-weight: bold; text-transform: uppercase; padding: 10px 20px; border-radius: 8px; transition: 0.3s; font-size: 14px; letter-spacing: 1px; }
+        .navbar a:hover { color: white; background: rgba(255,255,255,0.1); }
+        .navbar a.active { color: white; background: linear-gradient(135deg, #0fb9b1, #0a9992); box-shadow: 0 0 15px rgba(15, 185, 177, 0.4); }
+
+        /* SELETTORE LINGUA (FISSATO A DESTRA) */
+        .lang-switcher { 
+            position: absolute; 
+            right: 20px; 
+            display: flex; 
+            gap: 10px; 
+            background: rgba(0,0,0,0.5); 
+            padding: 5px 10px; 
+            border-radius: 20px; 
+            border: 1px solid rgba(255,255,255,0.1); 
+        }
+        .lang-btn { cursor: pointer; font-size: 18px; opacity: 0.4; transition: 0.2s; filter: grayscale(100%); }
+        .lang-btn:hover { opacity: 0.8; filter: grayscale(50%); transform: scale(1.1); }
+        .lang-btn.active { opacity: 1; filter: grayscale(0%); transform: scale(1.1); text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+
+        /* --- PLANCIA DI COMANDO --- */
+        .controls-panel { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .search-row { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; }
+        input, select { width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #485460; background-color: #1e272e; color: white; box-sizing: border-box; font-size: 15px; transition: 0.3s; font-weight: bold; }
+        input:focus, select:focus { outline: none; border-color: #2ed573; box-shadow: 0 0 10px rgba(46, 213, 115, 0.3); }
+        
+        .buttons-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .btn-group-wrapper { background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px dashed rgba(255,255,255,0.1); }
+        .btn-group-title { font-size: 11px; color: #ffdd59; text-transform: uppercase; font-weight: bold; margin-bottom: 10px; letter-spacing: 1px; display: block; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; }
+        
+        .btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
+        .filter-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #d2dae2; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 13px; }
+        .filter-btn:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); }
+        .filter-btn.active { background: linear-gradient(135deg, #0fb9b1, #0a9992); color: white; border-color: transparent; box-shadow: 0 4px 10px rgba(15, 185, 177, 0.4); }
+
+        .counter-testo { text-align: right; color: #a4b0be; font-size: 14px; font-weight: bold; margin-bottom: 20px; padding-right: 10px; }
+
+        /* --- GRIGLIA E CARD --- */
+        .dex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        
+        .dex-card { background-color: #1e272e; border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; text-align: center; transition: 0.3s; position: relative; overflow: hidden; box-sizing: border-box; cursor: pointer; }
+        .dex-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.8); }
+        
+        .dex-number-badge { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); color: rgba(255,255,255,0.8); font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); z-index: 2; letter-spacing: 1px; }
+
+        /* BOTTONE RAPIDO SULLA CARD */
+        .quick-add-btn { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 28px; height: 28px; font-size: 14px; font-weight: bold; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; z-index: 5; }
+        .quick-add-btn:hover { background: #20bf6b; transform: scale(1.1); }
+        /* STATO: GIA' IN SQUADRA */
+        .quick-add-btn.in-team { background: #20bf6b; border-color: #2ed573; cursor: default; }
+        .quick-add-btn.in-team:hover { transform: none; }
+
+        .dex-sprite { width: 80px; height: 80px; margin: 0 auto 10px auto; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); position: relative; z-index: 1; }
+        .dex-sprite img { max-width: 60px; max-height: 60px; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.5)); }
+        
+        .dex-name { font-size: 18px; font-weight: bold; color: white; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 1px 2px #000, 0 2px 4px #000; }
+        .dex-types { font-size: 11px; text-transform: uppercase; font-weight: bold; margin-bottom: 15px; letter-spacing: 1px; color: white; text-shadow: 0 1px 2px #000, 0 2px 4px #000; }
+        
+        .dex-bst { font-size: 20px; font-weight: 900; color: #ffdd59; text-shadow: 0 2px 4px rgba(0,0,0,0.8); background: rgba(0,0,0,0.5); padding: 5px; border-radius: 6px; display: inline-block; width: 100%; box-sizing: border-box; border: 1px solid rgba(255,255,255,0.1); }
+        .bst-label { display: block; font-size: 10px; color: #d2dae2; letter-spacing: 1px; margin-bottom: 2px; }
+
+        /* --- ALERT MODALE CUSTOM (ERRORE / SQUADRA PIENA) --- */
+        .custom-alert-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 9999; opacity: 0; transition: opacity 0.3s ease; }
+        .custom-alert-box { background: #1e272e; border: 2px solid #ff4757; border-radius: 15px; padding: 30px; max-width: 350px; text-align: center; box-shadow: 0 15px 40px rgba(255, 71, 87, 0.4); transform: translateY(20px); transition: transform 0.3s ease; }
+        .custom-alert-icon { font-size: 45px; margin-bottom: 10px; display: block; }
+        .custom-alert-msg { color: white; font-size: 16px; margin-bottom: 25px; line-height: 1.5; }
+        .custom-alert-btn { background: linear-gradient(135deg, #ff4757, #ff6b81); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; font-size: 14px; }
+        .custom-alert-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 71, 87, 0.5); }
+
+        @media (max-width: 850px) {
+            .navbar { flex-direction: column; text-align: center; }
+            .lang-switcher { position: static; margin: 10px auto 0 auto; }
+            .search-row { grid-template-columns: 1fr; }
+            .buttons-row { grid-template-columns: 1fr; }
+            .counter-testo { text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="navbar">
+        <a href="index.html" id="nav-box">📦 Box Manager</a>
+        <a href="pokedex.html" class="active" id="nav-dex" onclick="sessionStorage.clear()">📚 Pokédex Avanzato</a>
+        <a href="teambuilder.html" id="nav-team">🛡️ Teambuilder</a>
+        <a href="guida.html" id="nav-guide">📖 Come Funziona</a>
+        
+        <div class="lang-switcher">
+            <span class="lang-btn" id="lang-it" onclick="setLang('it')" title="Italiano">🇮🇹</span>
+            <span class="lang-btn" id="lang-en" onclick="setLang('en')" title="English">🇬🇧</span>
+        </div>
+    </div>
+
+    <h1 id="page-title">Pokédex Competitivo</h1>
+
+    <div class="controls-panel">
+        <div class="search-row">
+            <input type="text" id="dex-search" placeholder="Cerca un Pokémon per nome..." autocomplete="off">
+            <select id="dex-type-filter"></select>
+        </div>
+
+        <div class="buttons-row">
+            <div class="btn-group-wrapper">
+                <span class="btn-group-title" id="filter-region-title">🌍 Filtra per Regione (Generazione)</span>
+                <div class="btn-group" id="gen-filters">
+                    <button class="filter-btn active" data-gen="all" id="btn-gen-all">Tutte</button>
+                    <button class="filter-btn" data-gen="1">Kanto</button>
+                    <button class="filter-btn" data-gen="2">Johto</button>
+                    <button class="filter-btn" data-gen="3">Hoenn</button>
+                    <button class="filter-btn" data-gen="4">Sinnoh</button>
+                    <button class="filter-btn" data-gen="5">Unima</button>
+                </div>
+            </div>
+
+            <div class="btn-group-wrapper">
+                <span class="btn-group-title" id="filter-sort-title">📊 Ordina Risultati</span>
+                <div class="btn-group" id="sort-filters">
+                    <button class="filter-btn active" data-sort="id" id="btn-sort-id"># N. Pokédex</button>
+                    <button class="filter-btn" data-sort="az" id="btn-sort-az">A-Z Alfabetico</button>
+                    <button class="filter-btn" data-sort="desc" id="btn-sort-desc">BST (Più Forti ↓)</button>
+                    <button class="filter-btn" data-sort="asc" id="btn-sort-asc">BST (Più Deboli ↑)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="counter-testo" id="dex-counter">Preparazione Database in corso...</div>
+
+    <div class="dex-grid" id="dex-grid"></div>
+</div>
+
+<div class="custom-alert-overlay" id="custom-alert">
+    <div class="custom-alert-box" id="custom-alert-box">
+        <span class="custom-alert-icon" id="custom-alert-emoji">⚠️</span>
+        <div class="custom-alert-msg" id="custom-alert-text">Messaggio</div>
+        <button class="custom-alert-btn" onclick="chiudiCustomAlert()">OK</button>
+    </div>
+</div>
+
+<script>
+    // --- GESTIONE LINGUA ---
+    let lang = localStorage.getItem('pokemmo_lang') || 'it';
+
+    function setLang(l) {
+        localStorage.setItem('pokemmo_lang', l);
+        location.reload();
+    }
+
+    const dict = {
+        it: {
+            nav_box: "📦 Box Manager", nav_dex: "📚 Pokédex Avanzato", nav_team: "🛡️ Teambuilder", nav_guide: "📖 Come Funziona",
+            title: "Pokédex Competitivo", search_ph: "Cerca un Pokémon per nome...",
+            filter_region: "🌍 Filtra per Regione (Generazione)", filter_sort: "📊 Ordina Risultati",
+            gen_all: "Tutte", sort_id: "# N. Pokédex", sort_az: "A-Z Alfabetico", sort_desc: "BST (Più Forti ↓)", sort_asc: "BST (Più Deboli ↑)",
+            counter_prep: "Preparazione Database in corso...", counter_show: "Mostrando", pkmn_found: "Pokémon",
+            err_nodata: "<p style='grid-column: 1 / -1; text-align: center; color: #a4b0be; font-size: 18px;'>Nessun Pokémon trovato.</p>",
+            stat_tot: "TOTALE STATS", add_btn_title: "Aggiungi al Team",
+            already_team: "è già nella tua squadra!", team_full: "<b>Squadra piena (6/6)!</b><br><br>Vai al Teambuilder per fare spazio."
+        },
+        en: {
+            nav_box: "📦 Box Manager", nav_dex: "📚 Advanced Pokedex", nav_team: "🛡️ Teambuilder", nav_guide: "📖 How it works",
+            title: "Competitive Pokédex", search_ph: "Search Pokémon by name...",
+            filter_region: "🌍 Filter by Region (Generation)", filter_sort: "📊 Sort Results",
+            gen_all: "All", sort_id: "# Pokédex No.", sort_az: "A-Z Alphabetical", sort_desc: "BST (Strongest ↓)", sort_asc: "BST (Weakest ↑)",
+            counter_prep: "Preparing Database...", counter_show: "Showing", pkmn_found: "Pokémon",
+            err_nodata: "<p style='grid-column: 1 / -1; text-align: center; color: #a4b0be; font-size: 18px;'>No Pokémon found.</p>",
+            stat_tot: "TOTAL STATS", add_btn_title: "Add to Team",
+            already_team: "is already in your team!", team_full: "<b>Team full (6/6)!</b><br><br>Go to Teambuilder to make room."
+        }
+    };
+
+    const traduzioniTipi = {
+        it: { all: 'Tutti i Tipi', normal: 'Normale', fire: 'Fuoco', water: 'Acqua', electric: 'Elettro', grass: 'Erba', ice: 'Ghiaccio', fighting: 'Lotta', poison: 'Veleno', ground: 'Terra', flying: 'Volante', psychic: 'Psico', bug: 'Coleottero', rock: 'Roccia', ghost: 'Spettro', dragon: 'Drago', dark: 'Buio', steel: 'Acciaio', fairy: 'Folletto' },
+        en: { all: 'All Types', normal: 'Normal', fire: 'Fire', water: 'Water', electric: 'Electric', grass: 'Grass', ice: 'Ice', fighting: 'Fighting', poison: 'Poison', ground: 'Ground', flying: 'Flying', psychic: 'Psychic', bug: 'Bug', rock: 'Rock', ghost: 'Ghost', dragon: 'Dragon', dark: 'Dark', steel: 'Steel', fairy: 'Fairy' }
+    };
+
+    function traduciTipo(tipoEng) {
+        return traduzioniTipi[lang][tipoEng.toLowerCase()] || tipoEng;
+    }
+
+    function applicaTraduzioniBase() {
+        document.getElementById(`lang-${lang}`).classList.add('active');
+        const t = dict[lang];
+        
+        document.getElementById('nav-box').textContent = t.nav_box;
+        document.getElementById('nav-dex').textContent = t.nav_dex;
+        document.getElementById('nav-team').textContent = t.nav_team;
+        document.getElementById('nav-guide').textContent = t.nav_guide;
+        
+        document.getElementById('page-title').textContent = t.title;
+        document.getElementById('dex-search').placeholder = t.search_ph;
+        
+        document.getElementById('filter-region-title').textContent = t.filter_region;
+        document.getElementById('filter-sort-title').textContent = t.filter_sort;
+        
+        document.getElementById('btn-gen-all').textContent = t.gen_all;
+        document.getElementById('btn-sort-id').textContent = t.sort_id;
+        document.getElementById('btn-sort-az').textContent = t.sort_az;
+        document.getElementById('btn-sort-desc').textContent = t.sort_desc;
+        document.getElementById('btn-sort-asc').textContent = t.sort_asc;
+        
+        document.getElementById('dex-counter').textContent = t.counter_prep;
+
+        // Popola Tipo Select
+        const typeSelect = document.getElementById('dex-type-filter');
+        typeSelect.innerHTML = `<option value="all">${traduzioniTipi[lang].all}</option>`;
+        Object.keys(traduzioniTipi['en']).forEach(tipo => {
+            if(tipo !== 'all') typeSelect.innerHTML += `<option value="${tipo}">${traduciTipo(tipo).toUpperCase()}</option>`;
+        });
+    }
+
+    const coloriTipi = { normal: '#8A8866', fire: '#B86419', water: '#4F73C2', electric: '#C4A51D', grass: '#629E3C', ice: '#79AFAD', fighting: '#9B2520', poison: '#823281', ground: '#B59951', flying: '#8772C2', psychic: '#C7446C', bug: '#859415', rock: '#91812B', ghost: '#5C4679', dragon: '#582BCA', dark: '#594679', steel: '#9292A5', fairy: '#AB6A8A' };
+
+    let interoDatabase = [];
+    let dexIdMap = {}; 
+
+    async function preloadDexIds() {
+        try {
+            const res = await fetch('https://pokeapi.co/api/v2/pokemon-species?limit=649');
+            const data = await res.json();
+            data.results.forEach((s, index) => { dexIdMap[s.name] = index + 1; });
+        } catch(e) { console.error("Errore Mappa ID", e); }
+    }
+
+    function ottieniDexId(pokemonName) {
+        let baseName = pokemonName.toLowerCase().replace(/[^a-z0-9-]/g, '');
+        if(baseName.includes('mime')) baseName = 'mr-mime';
+        else if(baseName.includes('ho-oh')) baseName = 'ho-oh';
+        else if(baseName.includes('porygon')) baseName = baseName.includes('z') ? 'porygon-z' : (baseName.includes('2') ? 'porygon2' : 'porygon');
+        else baseName = baseName.split('-')[0]; 
+        return dexIdMap[baseName] || 9999;
+    }
+
+    function ottieniRegione(pokemonName) {
+        let id = ottieniDexId(pokemonName);
+        if(id >= 1 && id <= 151) return '1'; 
+        if(id >= 152 && id <= 251) return '2'; 
+        if(id >= 252 && id <= 386) return '3'; 
+        if(id >= 387 && id <= 493) return '4'; 
+        if(id >= 494 && id <= 649) return '5'; 
+        return 'all';
+    }
+
+    const calcolaBST = (p) => {
+        if(!p.base_stats) return 0;
+        return p.base_stats.hp + p.base_stats.atk + p.base_stats.def + p.base_stats.spa + p.base_stats.spd + (p.base_stats.spe || p.base_stats.speed || 0);
+    };
+
+    document.addEventListener("DOMContentLoaded", async function() {
+        applicaTraduzioniBase();
+        await preloadDexIds(); 
+        
+        document.getElementById('dex-search').addEventListener('input', filtraPokedex);
+        document.getElementById('dex-type-filter').addEventListener('change', filtraPokedex);
+
+        document.querySelectorAll('#gen-filters .filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('#gen-filters .filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                filtraPokedex();
+            });
+        });
+
+        document.querySelectorAll('#sort-filters .filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('#sort-filters .filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                filtraPokedex();
+            });
+        });
+
+        caricaPokedex();
+    });
+
+    async function caricaPokedex() {
+        try {
+            const response = await fetch('pokemmo_roles.json');
+            interoDatabase = await response.json();
+            
+            if (sessionStorage.getItem('dexSearch')) document.getElementById('dex-search').value = sessionStorage.getItem('dexSearch');
+            if (sessionStorage.getItem('dexType')) document.getElementById('dex-type-filter').value = sessionStorage.getItem('dexType');
+            
+            if (sessionStorage.getItem('dexGen')) {
+                const gen = sessionStorage.getItem('dexGen');
+                document.querySelectorAll('#gen-filters .filter-btn').forEach(b => b.classList.remove('active'));
+                const btn = document.querySelector(`#gen-filters .filter-btn[data-gen="${gen}"]`);
+                if(btn) btn.classList.add('active');
+            }
+            if (sessionStorage.getItem('dexSort')) {
+                const sort = sessionStorage.getItem('dexSort');
+                document.querySelectorAll('#sort-filters .filter-btn').forEach(b => b.classList.remove('active'));
+                const btn = document.querySelector(`#sort-filters .filter-btn[data-sort="${sort}"]`);
+                if(btn) btn.classList.add('active');
+            }
+            
+            filtraPokedex(); 
+            
+            const savedScroll = sessionStorage.getItem('dexScroll');
+            if (savedScroll) {
+                setTimeout(() => {
+                    window.scrollTo({ top: parseInt(savedScroll), behavior: 'smooth' });
+                    sessionStorage.removeItem('dexScroll'); 
+                }, 150);
+            }
+
+        } catch (error) { document.getElementById('dex-counter').textContent = "Errore nel caricamento."; }
+    }
+
+    function pulisciNomeSprite(nome) {
+        let id = nome.toLowerCase().replace('-male', '').replace('-female', '-f');
+        id = id.replace('-normal', '').replace('-altered', '').replace('-land', '').replace('-red-striped', '').replace('-standard', '').replace('-incarnate', '').replace('-ordinary', '').replace('-aria', '').replace('-plant', '');
+        return id.replace(/[^a-z0-9]/g, '');
+    }
+
+    function filtraPokedex() {
+        const testoRicerca = document.getElementById('dex-search').value.toLowerCase();
+        const tipoSelezionato = document.getElementById('dex-type-filter').value;
+        const genSelezionata = document.querySelector('#gen-filters .filter-btn.active').getAttribute('data-gen');
+        const sortSelezionato = document.querySelector('#sort-filters .filter-btn.active').getAttribute('data-sort');
+        
+        sessionStorage.setItem('dexSearch', testoRicerca);
+        sessionStorage.setItem('dexType', tipoSelezionato);
+        sessionStorage.setItem('dexGen', genSelezionata);
+        sessionStorage.setItem('dexSort', sortSelezionato);
+
+        let risultati = interoDatabase.filter(p => {
+            const matchNome = p.pokemon.toLowerCase().includes(testoRicerca);
+            // Cerca match case insensitive
+            const matchTipo = (tipoSelezionato === 'all') || p.types.map(t => t.toLowerCase()).includes(tipoSelezionato);
+            const matchGen = (genSelezionata === 'all') || (ottieniRegione(p.pokemon) === genSelezionata);
+            return matchNome && matchTipo && matchGen;
+        });
+
+        if (sortSelezionato === 'desc') risultati.sort((a,b) => calcolaBST(b) - calcolaBST(a));
+        else if (sortSelezionato === 'asc') risultati.sort((a,b) => calcolaBST(a) - calcolaBST(b));
+        else if (sortSelezionato === 'az') risultati.sort((a,b) => a.pokemon.localeCompare(b.pokemon));
+        else risultati.sort((a,b) => ottieniDexId(a.pokemon) - ottieniDexId(b.pokemon)); 
+        
+        mostraPokemon(risultati);
+    }
+
+    function mostraPokemon(listaPokemon) {
+        const grid = document.getElementById('dex-grid');
+        const counter = document.getElementById('dex-counter');
+        const t = dict[lang];
+        
+        grid.innerHTML = ''; 
+        counter.textContent = `${t.counter_show} ${listaPokemon.length} ${t.pkmn_found}`;
+        if (listaPokemon.length === 0) { grid.innerHTML = t.err_nodata; return; }
+
+        let teamAttuale = JSON.parse(localStorage.getItem('pokeMMOTeam')) || [];
+
+        listaPokemon.forEach(p => {
+            const spriteId = pulisciNomeSprite(p.pokemon);
+            const urlSprite = `https://play.pokemonshowdown.com/sprites/gen5ani/${spriteId}.gif`;
+            const bst = calcolaBST(p);
+            
+            const numDex = ottieniDexId(p.pokemon);
+            const badgeTesto = numDex !== 9999 ? `#${String(numDex).padStart(3, '0')}` : '#???';
+
+            const color1 = coloriTipi[p.types[0].toLowerCase()] || '#1e272e';
+            const color2 = p.types.length > 1 ? coloriTipi[p.types[1].toLowerCase()] : color1;
+
+            const card = document.createElement('div');
+            card.className = 'dex-card';
+            card.style.cursor = 'pointer'; 
+            
+            card.onclick = () => { 
+                sessionStorage.setItem('dexScroll', window.scrollY);
+                window.location.href = `dettaglio.html?id=${p.pokemon.toLowerCase()}`; 
+            };
+
+            card.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
+            card.style.borderColor = color1;
+
+            const isInTeam = teamAttuale.includes(p.pokemon);
+            const btnClass = isInTeam ? 'quick-add-btn in-team' : 'quick-add-btn';
+            const btnIcon = isInTeam ? '✅' : '➕';
+
+            // Traduzione dei tipi
+            const tipiHtml = p.types.map(tipo => traduciTipo(tipo)).join(' / ');
+
+            card.innerHTML = `
+                <div class="dex-number-badge">${badgeTesto}</div>
+                
+                <button class="${btnClass}" onclick="aggiungiRapido('${p.pokemon}', this, event)" title="${t.add_btn_title}">${btnIcon}</button>
+
+                <div class="dex-sprite">
+                    <img src="${urlSprite}" alt="${p.pokemon}" loading="lazy" onerror="this.src='https://play.pokemonshowdown.com/sprites/dex/${spriteId}.png'">
+                </div>
+                <div class="dex-name">${p.pokemon}</div>
+                <div class="dex-types">${tipiHtml}</div>
+                <div class="dex-bst">
+                    <span class="bst-label">${t.stat_tot}</span>
+                    ${bst}
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // --- FUNZIONI CUSTOM ALERT ---
+    function mostraCustomAlert(messaggio) {
+        document.getElementById('custom-alert-text').innerHTML = messaggio;
+        const modal = document.getElementById('custom-alert');
+        const box = document.getElementById('custom-alert-box');
+        modal.style.display = 'flex';
+        setTimeout(() => { modal.style.opacity = '1'; box.style.transform = 'translateY(0)'; }, 10);
+    }
+
+    function chiudiCustomAlert() {
+        const modal = document.getElementById('custom-alert');
+        const box = document.getElementById('custom-alert-box');
+        modal.style.opacity = '0'; box.style.transform = 'translateY(20px)';
+        setTimeout(() => { modal.style.display = 'none'; }, 300);
+    }
+
+    function aggiungiRapido(nomePokemon, btnElement, event) {
+        event.stopPropagation(); 
+        const t = dict[lang];
+        let team = JSON.parse(localStorage.getItem('pokeMMOTeam')) || [null, null, null, null, null, null];
+        
+        if (team.includes(nomePokemon)) {
+            mostraCustomAlert(`<b>${nomePokemon}</b> ${t.already_team}`);
+            return;
+        }
+        
+        let firstEmpty = team.indexOf(null);
+        if (firstEmpty === -1) {
+            mostraCustomAlert(t.team_full);
+            return;
+        }
+        
+        team[firstEmpty] = nomePokemon;
+        localStorage.setItem('pokeMMOTeam', JSON.stringify(team));
+        
+        btnElement.innerHTML = "✅";
+        btnElement.className = "quick-add-btn in-team";
+    }
+</script>
+
+</body>
+</html>
