@@ -229,6 +229,8 @@
                 <div style="color: #a4b0be; text-transform: uppercase; font-size: 14px; letter-spacing: 2px;" id="res-title">Miglior Ruolo Rilevato</div>
                 <div class="ruolo-top" id="out-ruolo">-</div>
                 <div class="score" id="out-score">0%</div>
+                
+                <div id="out-consiglio" style="font-weight: bold; margin-bottom: 15px; font-size: 14px;"></div>
                 <div class="dettagli-natura" id="out-dettagli"></div>
                 <div id="avviso-pillola" class="avviso-pillola">💊 ATTENZIONE: Abilità diversa. Ti servirà una Pillola Abilità (Costo: ~35.000$)</div>
                 <div id="allarme-ha" class="allarme-abilita">❌ INUTILIZZABILE: L'abilità desiderata è Nascosta (HA) e non può essere ottenuta con la pillola!</div>
@@ -618,6 +620,30 @@
         if (statoAbilita === "ERRORE_HA") scoreEl.style.color = "#ff4757"; else if (migliorPunteggio >= 90) scoreEl.style.color = "#2ed573"; else if (migliorPunteggio >= 75) scoreEl.style.color = "#ffa502"; else scoreEl.style.color = "#ff4757";
 
         document.getElementById('risultato-box').style.display = 'block'; document.getElementById('btn-salva').style.display = 'block'; 
+
+        // --- LOGICA ADDOLCITORE ---
+        let consiglioUso = "";
+        let coloreConsiglio = "";
+
+        if (migliorPunteggio >= 85) {
+            consiglioUso = lang === 'it' ? "🛡️ PvP Ready: Eccellente per il competitivo." : "🛡️ PvP Ready: Excellent for competitive.";
+            coloreConsiglio = "#2ed573";
+        } else if (migliorPunteggio >= 30 && (ivs.atk >= 20 || ivs.spa >= 20 || ivs.spe >= 20)) {
+            // Caso Dodrio: Voto basso ma utile per la storia
+            consiglioUso = lang === 'it' ? "📖 Story Mode: Non ideale per PvP, ma ottimo per l'avventura." : "📖 Story Mode: Not ideal for PvP, but great for the story.";
+            coloreConsiglio = "#ffa502";
+        } else {
+            consiglioUso = lang === 'it' ? "⚠️ Breeder: Utile principalmente per il breeding." : "⚠️ Breeder: Mainly useful for breeding.";
+            coloreConsiglio = "#ff4757";
+        }
+
+        const outConsiglio = document.getElementById('out-consiglio');
+        outConsiglio.textContent = consiglioUso;
+        outConsiglio.style.color = coloreConsiglio;
+
+        // Salva nel record per la tabella
+        valutazioneCorrente.consiglio = consiglioUso;
+        valutazioneCorrente.coloreConsiglio = coloreConsiglio;
     }
 
     function salvaNellaLista() {
