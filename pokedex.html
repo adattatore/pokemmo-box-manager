@@ -96,37 +96,27 @@
         .custom-alert-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 71, 87, 0.5); }
 
         @media (max-width: 850px) {
-            /* 1. LAYOUT BASE MOBILE */
             body { padding-bottom: 90px; padding-top: 50px; }
             .container { padding: 15px; border-radius: 0; box-shadow: none; border: none; }
             h1 { font-size: 22px; margin-top: 10px; }
             
-            /* 2. NAVBAR STILE APP (Fissa in basso) */
-            .navbar {
-                position: fixed; bottom: 0; left: 0; width: 100%; margin: 0;
-                padding: 10px 5px; border-radius: 20px 20px 0 0;
-                background: rgba(30, 39, 46, 0.95); backdrop-filter: blur(10px);
-                border-top: 2px solid #0fb9b1; border-left: none; border-right: none; border-bottom: none;
-                z-index: 1000; justify-content: space-around; gap: 5px;
-                box-shadow: 0 -5px 20px rgba(0,0,0,0.8);
-            }
-            .navbar a { flex-direction: column; padding: 8px 5px; font-size: 10px; border-radius: 12px; text-align: center; gap: 4px; flex: 1; }
-            .navbar a::first-letter { font-size: 20px; } /* Ingrandisce l'emoji */
-
-            /* 3. LINGUA (Fissa in alto a destra) */
+            /* Navbar fissa stile App */
+            .navbar { position: fixed; bottom: 0; left: 0; width: 100%; margin: 0; padding: 10px 5px; border-radius: 20px 20px 0 0; background: rgba(30, 39, 46, 0.95); backdrop-filter: blur(10px); border-top: 2px solid #0fb9b1; border-left: none; border-right: none; border-bottom: none; z-index: 1000; justify-content: space-around; gap: 5px; box-shadow: 0 -5px 20px rgba(0,0,0,0.8); flex-wrap: nowrap; }
+            .navbar a { flex-direction: column; padding: 8px 2px; font-size: 10px; border-radius: 12px; text-align: center; gap: 4px; flex: 1; }
+            .navbar a::first-letter { font-size: 20px; }
             .lang-switcher { position: fixed; top: 10px; right: 15px; margin: 0; z-index: 100; background: rgba(0,0,0,0.8); }
             
-            /* 4. FILTRI SCORREVOLI ORIZZONTALI (SWIPE) */
+            /* Filtri Scorrevoli a Swipe */
             .btn-group { display: flex; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 10px; -webkit-overflow-scrolling: touch; gap: 10px; }
             .filter-btn { flex: 0 0 auto; white-space: nowrap; }
             .btn-group::-webkit-scrollbar { height: 4px; }
             .btn-group::-webkit-scrollbar-thumb { background: rgba(15, 185, 177, 0.5); border-radius: 4px; }
-
-            /* 5. VECCHI FIX DEL POKEDEX */
+            
+            /* Fix Allineamento Colonne (elimina lo zoom out) */
             .search-row { grid-template-columns: 1fr; }
             .buttons-row { grid-template-columns: 1fr; }
             .counter-testo { text-align: center; }
-            .grid-container { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+            .dex-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
         }
     </style>
 </head>

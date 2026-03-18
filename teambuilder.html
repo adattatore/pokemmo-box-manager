@@ -145,38 +145,30 @@
         .mini-type-badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; color: white; text-transform: uppercase; font-weight: bold; text-shadow: 0 1px 2px #000; border: 1px solid rgba(255,255,255,0.1); }
         .slot-name { font-size: 12px; margin-top: 2px; }
 
-        @media (max-width: 850px) {
-            /* 1. LAYOUT BASE MOBILE */
+        @media (max-width: 900px) {
             body { padding-bottom: 90px; padding-top: 50px; }
             .container { padding: 15px; border-radius: 0; box-shadow: none; border: none; }
             h1 { font-size: 22px; margin-top: 10px; }
             
-            /* 2. NAVBAR STILE APP (Fissa in basso) */
-            .navbar {
-                position: fixed; bottom: 0; left: 0; width: 100%; margin: 0;
-                padding: 10px 5px; border-radius: 20px 20px 0 0;
-                background: rgba(30, 39, 46, 0.95); backdrop-filter: blur(10px);
-                border-top: 2px solid #0fb9b1; border-left: none; border-right: none; border-bottom: none;
-                z-index: 1000; justify-content: space-around; gap: 5px;
-                box-shadow: 0 -5px 20px rgba(0,0,0,0.8);
-            }
-            .navbar a { flex-direction: column; padding: 8px 5px; font-size: 10px; border-radius: 12px; text-align: center; gap: 4px; flex: 1; }
-            .navbar a::first-letter { font-size: 20px; } /* Ingrandisce l'emoji */
-
-            /* 3. LINGUA (Fissa in alto a destra) */
+            /* Navbar fissa stile App */
+            .navbar { position: fixed; bottom: 0; left: 0; width: 100%; margin: 0; padding: 10px 5px; border-radius: 20px 20px 0 0; background: rgba(30, 39, 46, 0.95); backdrop-filter: blur(10px); border-top: 2px solid #0fb9b1; border-left: none; border-right: none; border-bottom: none; z-index: 1000; justify-content: space-around; gap: 5px; box-shadow: 0 -5px 20px rgba(0,0,0,0.8); flex-wrap: nowrap; }
+            .navbar a { flex-direction: column; padding: 8px 2px; font-size: 10px; border-radius: 12px; text-align: center; gap: 4px; flex: 1; }
+            .navbar a::first-letter { font-size: 20px; }
             .lang-switcher { position: fixed; top: 10px; right: 15px; margin: 0; z-index: 100; background: rgba(0,0,0,0.8); }
             
-            /* 4. FILTRI SCORREVOLI ORIZZONTALI (SWIPE) */
-            .btn-group { display: flex; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 10px; -webkit-overflow-scrolling: touch; gap: 10px; }
-            .filter-btn { flex: 0 0 auto; white-space: nowrap; }
-            .btn-group::-webkit-scrollbar { height: 4px; }
-            .btn-group::-webkit-scrollbar-thumb { background: rgba(15, 185, 177, 0.5); border-radius: 4px; }
-
-            /* 5. VECCHI FIX DEL POKEDEX */
-            .search-row { grid-template-columns: 1fr; }
-            .buttons-row { grid-template-columns: 1fr; }
-            .counter-testo { text-align: center; }
-            .grid-container { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+            /* Filtri Scorrevoli a Swipe */
+            .random-controls { width: 100%; justify-content: flex-start; display: flex; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 10px; -webkit-overflow-scrolling: touch; }
+            .random-controls > * { flex: 0 0 auto; white-space: nowrap; }
+            .random-controls::-webkit-scrollbar { height: 4px; }
+            .random-controls::-webkit-scrollbar-thumb { background: rgba(15, 185, 177, 0.5); border-radius: 4px; }
+            
+            /* Fix Allineamento Colonne (elimina lo zoom out) */
+            .team-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+            .bottom-panels { grid-template-columns: 1fr; }
+            .modal-results { grid-template-columns: repeat(2, 1fr); }
+            .panel-title { flex-direction: column; align-items: flex-start; }
+            .team-slot { height: 140px; }
+            .slot-sprite { width: 60px; height: 60px; }
         }
     </style>
 </head>
