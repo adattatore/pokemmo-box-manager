@@ -13,17 +13,41 @@
         
         h1 { text-align: center; color: #ffdd59; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
         
-        /* --- BARRA DI NAVIGAZIONE (FIX CENTRAMENTO) --- */
-        .navbar { position: relative; display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 30px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; border: 1px solid #485460; flex-wrap: wrap; }
-        .navbar a { color: #a4b0be; text-decoration: none; font-weight: bold; text-transform: uppercase; padding: 10px 20px; border-radius: 8px; transition: 0.3s; font-size: 14px; letter-spacing: 1px; }
+        /* --- BARRA DI NAVIGAZIONE (DESKTOP) --- */
+        .navbar { 
+            position: relative; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 15px; 
+            margin-bottom: 30px; 
+            background: rgba(0,0,0,0.3); 
+            padding: 15px; 
+            border-radius: 10px; 
+            border: 1px solid #485460; 
+            flex-wrap: wrap; 
+        }
+        .navbar a { color: #a4b0be; text-decoration: none; font-weight: bold; text-transform: uppercase; padding: 10px 20px; border-radius: 8px; transition: 0.3s; font-size: 14px; letter-spacing: 1px; display: flex; align-items: center; gap: 8px;}
         .navbar a:hover { color: white; background: rgba(255,255,255,0.1); }
         .navbar a.active { color: white; background: linear-gradient(135deg, #0fb9b1, #0a9992); box-shadow: 0 0 15px rgba(15, 185, 177, 0.4); }
 
-        /* SELETTORE LINGUA ASSOLUTO A DESTRA */
-        .lang-switcher { position: absolute; right: 20px; display: flex; gap: 10px; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        /* SELETTORE LINGUA ASSOLUTO A DESTRA (DESKTOP) */
+        .lang-switcher { 
+            position: absolute; 
+            right: 20px; 
+            display: flex; 
+            gap: 10px; 
+            background: rgba(0,0,0,0.5); 
+            padding: 5px 10px; 
+            border-radius: 20px; 
+            border: 1px solid rgba(255,255,255,0.1); 
+        }
         .lang-btn { cursor: pointer; font-size: 18px; opacity: 0.4; transition: 0.2s; filter: grayscale(100%); }
         .lang-btn:hover { opacity: 0.8; filter: grayscale(50%); transform: scale(1.1); }
         .lang-btn.active { opacity: 1; filter: grayscale(0%); transform: scale(1.1); text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        
+        /* Aggiunta spaziatura per evitare che il contenuto finisca sotto la barra fissa */
+        body { padding-bottom: 80px; } /* Solo su mobile servirà, ma lo mettiamo qui */
 
         /* --- STILI DELLA GUIDA --- */
         .intro-text { text-align: center; font-size: 16px; margin-bottom: 30px; color: #a4b0be; }
@@ -43,8 +67,52 @@
         .highlight-box strong { color: #ffa502; }
 
         @media (max-width: 850px) {
-            .navbar { flex-direction: column; text-align: center; }
-            .lang-switcher { position: static; margin: 10px auto 0 auto; }
+            body { padding-bottom: 90px; padding-top: 50px; } /* Spazio in alto per lingua, in basso per nav */
+            
+            /* Il contenitore perde il padding laterale eccessivo */
+            .container { padding: 15px; border-radius: 0; box-shadow: none; border: none; }
+            
+            /* LA NAVBAR DIVENTA UNA BOTTOM BAR FISSA IN STILE APP */
+            .navbar {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                margin: 0;
+                padding: 10px 5px;
+                border-radius: 20px 20px 0 0;
+                background: rgba(30, 39, 46, 0.95);
+                backdrop-filter: blur(10px);
+                border-top: 2px solid #0fb9b1;
+                border-left: none; border-right: none; border-bottom: none;
+                z-index: 1000;
+                justify-content: space-around;
+                gap: 5px;
+                box-shadow: 0 -5px 20px rgba(0,0,0,0.8);
+            }
+            .navbar a {
+                flex-direction: column;
+                padding: 8px 5px;
+                font-size: 10px; /* Testo più piccolo */
+                border-radius: 12px;
+                text-align: center;
+                gap: 4px;
+                flex: 1; /* Distribuisce i bottoni uniformemente */
+            }
+            /* Aumenta la grandezza dell'icona (emoji) nel menù */
+            .navbar a::first-letter { font-size: 20px; }
+
+            /* La Lingua si sposta in cima allo schermo in modo sobrio */
+            .lang-switcher {
+                position: fixed;
+                top: 10px;
+                right: 15px;
+                margin: 0;
+                z-index: 100;
+                background: rgba(0,0,0,0.8);
+            }
+            
+            h1 { font-size: 22px; margin-top: 10px; }
         }
     </style>
 </head>

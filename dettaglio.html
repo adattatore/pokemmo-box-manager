@@ -23,6 +23,7 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e272e; background-image: radial-gradient(#2f3640 1px, transparent 1px); background-size: 20px 20px; color: #d2dae2; padding: 20px; margin: 0; }
         .container { max-width: 1000px; margin: 0 auto; }
         /* --- BARRA DI NAVIGAZIONE (FIX CENTRAMENTO) --- */
+        /* --- BARRA DI NAVIGAZIONE (DESKTOP) --- */
         .navbar { 
             position: relative; 
             display: flex; 
@@ -36,11 +37,11 @@
             border: 1px solid #485460; 
             flex-wrap: wrap; 
         }
-        .navbar a { color: #a4b0be; text-decoration: none; font-weight: bold; text-transform: uppercase; padding: 10px 20px; border-radius: 8px; transition: 0.3s; font-size: 14px; letter-spacing: 1px; }
+        .navbar a { color: #a4b0be; text-decoration: none; font-weight: bold; text-transform: uppercase; padding: 10px 20px; border-radius: 8px; transition: 0.3s; font-size: 14px; letter-spacing: 1px; display: flex; align-items: center; gap: 8px;}
         .navbar a:hover { color: white; background: rgba(255,255,255,0.1); }
         .navbar a.active { color: white; background: linear-gradient(135deg, #0fb9b1, #0a9992); box-shadow: 0 0 15px rgba(15, 185, 177, 0.4); }
 
-        /* SELETTORE LINGUA (FISSATO A DESTRA) */
+        /* SELETTORE LINGUA ASSOLUTO A DESTRA (DESKTOP) */
         .lang-switcher { 
             position: absolute; 
             right: 20px; 
@@ -54,6 +55,9 @@
         .lang-btn { cursor: pointer; font-size: 18px; opacity: 0.4; transition: 0.2s; filter: grayscale(100%); }
         .lang-btn:hover { opacity: 0.8; filter: grayscale(50%); transform: scale(1.1); }
         .lang-btn.active { opacity: 1; filter: grayscale(0%); transform: scale(1.1); text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        
+        /* Aggiunta spaziatura per evitare che il contenuto finisca sotto la barra fissa */
+        body { padding-bottom: 80px; } /* Solo su mobile servirà, ma lo mettiamo qui */
 
         /* --- BARRA NAVIGAZIONE POKEMON --- */
         .header-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background: rgba(0,0,0,0.4); padding: 10px 20px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); }
@@ -146,12 +150,56 @@
 
         #errore-msg { text-align: center; background: rgba(255, 71, 87, 0.2); color: #ff4757; font-size: 16px; font-weight: bold; padding: 15px; border-radius: 10px; border: 1px solid #ff4757; margin-bottom: 20px; display: none; }
 
-        @media (max-width: 800px) {
-            .dettaglio-box { grid-template-columns: 1fr; }
-            .evo-chain { justify-content: flex-start; }
-            .stats-header { flex-direction: column; gap: 10px; align-items: flex-start; }
-            .navbar { flex-direction: column; text-align: center; }
-            .lang-switcher { position: static; margin: 10px auto 0 auto; }
+        @media (max-width: 850px) {
+            body { padding-bottom: 90px; padding-top: 50px; } /* Spazio in alto per lingua, in basso per nav */
+            
+            /* Il contenitore perde il padding laterale eccessivo */
+            .container { padding: 15px; border-radius: 0; box-shadow: none; border: none; }
+            .dettaglio-box { grid-template-columns: 1fr; padding: 15px; } /* Riduce i padding interni su mobile */
+            .sprite-grande { width: 120px; height: 120px; } /* Rimpicciolisce leggermente l'anello dello sprite */
+            .sprite-grande img { max-width: 90px; max-height: 90px; }
+            .nome-pkmn { font-size: 24px; }
+            /* LA NAVBAR DIVENTA UNA BOTTOM BAR FISSA IN STILE APP */
+            .navbar {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                margin: 0;
+                padding: 10px 5px;
+                border-radius: 20px 20px 0 0;
+                background: rgba(30, 39, 46, 0.95);
+                backdrop-filter: blur(10px);
+                border-top: 2px solid #0fb9b1;
+                border-left: none; border-right: none; border-bottom: none;
+                z-index: 1000;
+                justify-content: space-around;
+                gap: 5px;
+                box-shadow: 0 -5px 20px rgba(0,0,0,0.8);
+            }
+            .navbar a {
+                flex-direction: column;
+                padding: 8px 5px;
+                font-size: 10px; /* Testo più piccolo */
+                border-radius: 12px;
+                text-align: center;
+                gap: 4px;
+                flex: 1; /* Distribuisce i bottoni uniformemente */
+            }
+            /* Aumenta la grandezza dell'icona (emoji) nel menù */
+            .navbar a::first-letter { font-size: 20px; }
+
+            /* La Lingua si sposta in cima allo schermo in modo sobrio */
+            .lang-switcher {
+                position: fixed;
+                top: 10px;
+                right: 15px;
+                margin: 0;
+                z-index: 100;
+                background: rgba(0,0,0,0.8);
+            }
+            
+            h1 { font-size: 22px; margin-top: 10px; }
         }
     </style>
 </head>
