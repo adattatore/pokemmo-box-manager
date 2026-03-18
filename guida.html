@@ -67,7 +67,7 @@
         .highlight-box strong { color: #ffa502; }
 
         @media (max-width: 850px) {
-            body { padding-bottom: 90px; padding-top: 50px; }
+            body { padding-bottom: 90px; padding-top: 20px; }
             .container { padding: 15px; border-radius: 0; box-shadow: none; border: none; }
             h1 { font-size: 22px; margin-top: 10px; }
             
@@ -75,7 +75,9 @@
             .navbar { position: fixed; bottom: 0; left: 0; width: 100%; margin: 0; padding: 10px 5px; border-radius: 20px 20px 0 0; background: rgba(30, 39, 46, 0.95); backdrop-filter: blur(10px); border-top: 2px solid #0fb9b1; border-left: none; border-right: none; border-bottom: none; z-index: 1000; justify-content: space-around; gap: 5px; box-shadow: 0 -5px 20px rgba(0,0,0,0.8); flex-wrap: nowrap; }
             .navbar a { flex-direction: column; padding: 8px 2px; font-size: 10px; border-radius: 12px; text-align: center; gap: 4px; flex: 1; }
             .navbar a::first-letter { font-size: 20px; }
-            .lang-switcher { position: fixed; top: 10px; right: 15px; margin: 0; z-index: 100; background: rgba(0,0,0,0.8); }
+            
+            /* Lingua galleggiante sopra la navbar in basso */
+            .lang-switcher { position: absolute; top: -45px; right: 15px; margin: 0; z-index: 100; background: rgba(30, 39, 46, 0.95); box-shadow: 0 -2px 10px rgba(0,0,0,0.5); }
         }
     </style>
 </head>
