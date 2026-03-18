@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PokeMMO Evaluator & Box</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e272e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e272e; background-image: radial-gradient(#2f3640 1px, transparent 1px); background-size: 20px 20px; color: #d2dae2; padding: 20px; margin: 0; }
         .container { max-width: 1100px; margin: 0 auto; background-color: rgba(44, 62, 80, 0.95); padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #34495e; }
@@ -132,13 +136,11 @@
             h1 { font-size: 22px; margin-top: 10px; }
             
             /* Navbar fissa stile App */
-            .navbar { position: fixed; bottom: 0; left: 0; width: 100%; margin: 0; padding: 10px 5px; border-radius: 20px 20px 0 0; background: rgba(30, 39, 46, 0.95); backdrop-filter: blur(10px); border-top: 2px solid #0fb9b1; border-left: none; border-right: none; border-bottom: none; z-index: 1000; justify-content: space-around; gap: 5px; box-shadow: 0 -5px 20px rgba(0,0,0,0.8); flex-wrap: nowrap; }
-            .navbar a { flex-direction: column; padding: 8px 2px; font-size: 10px; border-radius: 12px; text-align: center; gap: 4px; flex: 1; }
+            .navbar { position: fixed; bottom: 0; left: 0; width: 100%; margin: 0; padding: 5px 5px; border-radius: 20px 20px 0 0; background: rgba(30, 39, 46, 0.95); backdrop-filter: blur(10px); border-top: 2px solid #0fb9b1; border-left: none; border-right: none; border-bottom: none; z-index: 1000; justify-content: space-around; gap: 5px; box-shadow: 0 -5px 20px rgba(0,0,0,0.8); flex-wrap: nowrap; }
+            .navbar a { flex-direction: column; padding: 8px 2px; font-size: 10px; line-height: 12px; border-radius: 12px; text-align: center; gap: 0px !important; flex: 1; }
             .navbar a::first-letter { font-size: 20px; }
-            
-            /* Lingua galleggiante sopra la navbar in basso */
-            .lang-switcher { position: absolute; top: -45px; right: 15px; margin: 0; z-index: 100; background: rgba(30, 39, 46, 0.95); box-shadow: 0 -2px 10px rgba(0,0,0,0.5); }
-            
+            .lang-switcher { position: absolute; top: -38px; right: 15px; margin: 0; z-index: 100; background: rgba(30, 39, 46, 0.95); box-shadow: 0 -2px 10px rgba(0,0,0,0.5); padding: 3px 8px; }
+            .lang-btn { font-size: 14px; } /* Bandierine leggermente più piccole */
             /* Fix Ordine Box Manager (Immagine in alto, form in basso) */
             .top-layout { display: flex; flex-direction: column; gap: 20px; }
             .pokedex-panel { order: 1; } 
@@ -228,9 +230,14 @@
             <div id="risultato-box">
                 <div style="color: #a4b0be; text-transform: uppercase; font-size: 14px; letter-spacing: 2px;" id="res-title">Miglior Ruolo Rilevato</div>
                 <div class="ruolo-top" id="out-ruolo">-</div>
+                
                 <div class="score" id="out-score">0%</div>
+                <div style="font-size: 16px; color: #a4b0be; margin-top: -5px; margin-bottom: 15px;" id="out-score-story-box">
+                    <span id="lbl-story-mode">Voto Avventura:</span> <span id="out-score-story" style="font-weight: bold;">0%</span>
+                </div>
                 
                 <div id="out-consiglio" style="font-weight: bold; margin-bottom: 15px; font-size: 14px;"></div>
+                
                 <div class="dettagli-natura" id="out-dettagli"></div>
                 <div id="avviso-pillola" class="avviso-pillola">💊 ATTENZIONE: Abilità diversa. Ti servirà una Pillola Abilità (Costo: ~35.000$)</div>
                 <div id="allarme-ha" class="allarme-abilita">❌ INUTILIZZABILE: L'abilità desiderata è Nascosta (HA) e non può essere ottenuta con la pillola!</div>
@@ -317,7 +324,12 @@
             err_ha: "❌ INUTILIZZABILE: L'abilità desiderata è Nascosta (HA) e non può essere ottenuta con la pillola!",
             cost_pill: "💊 35k$", cost_ha: "❌ Impossibile",
             btn_team: "➕ Team", in_team: "✅", stat_tot: "TOTALE",
-            add_success: "è stato aggiunto alla tua squadra!", already_team: "è già nella tua squadra!", team_full: "Squadra piena (6/6)!<br><br>Vai al Teambuilder per fare spazio."
+            add_success: "è stato aggiunto alla tua squadra!", already_team: "è già nella tua squadra!", team_full: "Squadra piena (6/6)!<br><br>Vai al Teambuilder per fare spazio.",
+            // Nuove Traduzioni per l'Addolcitore
+            adv_pvp: "🛡️ PvP Ready: Eccellente per il competitivo.",
+            adv_story: "📖 Story Mode: Ottimo per l'avventura.",
+            adv_breed: "⚠️ Breeder: Utile principalmente per incroci.",
+            story_mode: "Voto Avventura:"
         },
         en: {
             nav_box: "📦 Box Manager", nav_dex: "📚 Advanced Pokedex", nav_team: "🛡️ Teambuilder", nav_guide: "📖 How it works",
@@ -332,7 +344,12 @@
             err_ha: "❌ UNUSABLE: Desired ability is Hidden (HA) and cannot be obtained with a pill!",
             cost_pill: "💊 35k$", cost_ha: "❌ Impossible",
             btn_team: "➕ Team", in_team: "✅", stat_tot: "TOTAL",
-            add_success: "has been added to your team!", already_team: "is already in your team!", team_full: "Team full (6/6)!<br><br>Go to Teambuilder to make room."
+            add_success: "has been added to your team!", already_team: "is already in your team!", team_full: "Team full (6/6)!<br><br>Go to Teambuilder to make room.",
+            // Nuove Traduzioni per l'Addolcitore
+            adv_pvp: "🛡️ PvP Ready: Excellent for competitive.",
+            adv_story: "📖 Story Mode: Great for the storyline.",
+            adv_breed: "⚠️ Breeder: Mainly useful for breeding.",
+            story_mode: "Story Score:"
         }
     };
 
@@ -377,6 +394,9 @@
         document.getElementById('th-score').textContent = t.th_score;
         document.getElementById('th-cost').textContent = t.th_cost;
         document.getElementById('th-action').textContent = t.th_action;
+        
+        // Traduzione label story mode
+        document.getElementById('lbl-story-mode').textContent = t.story_mode;
 
         // Popola la select delle nature in base alla lingua
         const selectNatura = document.getElementById('nature-select');
@@ -584,56 +604,75 @@
 
         const ivs = { hp: document.getElementById('iv-hp').value, atk: document.getElementById('iv-atk').value, def: document.getElementById('iv-def').value, spa: document.getElementById('iv-spa').value, spd: document.getElementById('iv-spd').value, spe: document.getElementById('iv-spe').value };
         
-        // La chiave della natura è quella passata dal select (che è fissa)
         const chiaveNatura = document.getElementById('nature-select').value;
         const naturaScelta = effettiNatura[chiaveNatura];
-        let migliorPunteggio = -1; let ruoloMigliore = "";
+        
+        let migliorPunteggio = -1; 
+        let migliorPunteggioStory = -1;
+        let ruoloMigliore = "";
 
         datiPokemon.roles.forEach(ruolo => {
             let pPonderato = 0; let pMax = 0;
             for (let stat in ruolo.weights) { pPonderato += Math.pow((ivs[stat] / 31), 2) * ruolo.weights[stat]; pMax += 1.0 * ruolo.weights[stat]; }
-            let percentuale = (pPonderato / pMax) * 100;
-            let molt = 1.0;
-            if (naturaScelta.plus !== "nessuna") { if (ruolo.weights[naturaScelta.plus] === 1.0) molt += 0.15; else if (ruolo.weights[naturaScelta.plus] > 0) molt += 0.05; }
-            if (naturaScelta.minus !== "nessuna") { if (ruolo.weights[naturaScelta.minus] === 1.0) molt = 0.50; else if (ruolo.weights[naturaScelta.minus] > 0) molt -= 0.15; else if (ruolo.weights[naturaScelta.minus] === 0) molt += 0.05; }
+            let percentualeBase = (pPonderato / pMax) * 100;
+            
+            // Calcolo PvP Severo
+            let moltPvP = 1.0;
+            if (naturaScelta.plus !== "nessuna") { if (ruolo.weights[naturaScelta.plus] === 1.0) moltPvP += 0.15; else if (ruolo.weights[naturaScelta.plus] > 0) moltPvP += 0.05; }
+            if (naturaScelta.minus !== "nessuna") { if (ruolo.weights[naturaScelta.minus] === 1.0) moltPvP = 0.50; else if (ruolo.weights[naturaScelta.minus] > 0) moltPvP -= 0.15; else if (ruolo.weights[naturaScelta.minus] === 0) moltPvP += 0.05; }
 
-            let finale = percentuale * molt; if (finale > 100) finale = 100;
-            if (statoAbilita === "ERRORE_HA") finale = finale * 0.5; 
+            // Calcolo Story Generoso
+            let moltStory = 1.0;
+            if (naturaScelta.plus !== "nessuna") moltStory += 0.05; 
+            if (naturaScelta.minus !== "nessuna") moltStory -= 0.05; 
 
-            if (finale > migliorPunteggio) { 
-                migliorPunteggio = finale; 
-                // Estrae il nome ruolo in base alla lingua
+            let finalePvP = percentualeBase * moltPvP; if (finalePvP > 100) finalePvP = 100;
+            let finaleStory = percentualeBase * moltStory; if (finaleStory > 100) finaleStory = 100;
+            
+            if (statoAbilita === "ERRORE_HA") { 
+                finalePvP = finalePvP * 0.5; 
+                finaleStory = finaleStory * 0.8; // Meno severo per la storia
+            } 
+
+            if (finalePvP > migliorPunteggio) { 
+                migliorPunteggio = finalePvP; 
+                migliorPunteggioStory = finaleStory; // Lega il punteggio story al miglior ruolo
                 ruoloMigliore = typeof ruolo.role_name === 'object' ? (ruolo.role_name[lang] || ruolo.role_name['en']) : ruolo.role_name;
             }
         });
 
+        // --- PREPARA DATI E STAMPA A SCHERMO ---
         valutazioneCorrente = {
             nome: datiPokemon.pokemon, natura: chiaveNatura, ivs: ivs, 
             ruolo: assegnaEmojiRuolo(ruoloMigliore), score: migliorPunteggio.toFixed(1),
+            scoreStory: migliorPunteggioStory.toFixed(1),
             spriteId: datiPokemon.pokemon.toLowerCase().replace(/[^a-z0-9]/g, ''), statoAbilita: statoAbilita
         };
 
         document.getElementById('out-ruolo').textContent = valutazioneCorrente.ruolo;
         document.getElementById('out-score').textContent = valutazioneCorrente.score + "%";
+        document.getElementById('out-score-story').textContent = valutazioneCorrente.scoreStory + "%";
         
+        // Colore Score PvP
         const scoreEl = document.getElementById('out-score');
         if (statoAbilita === "ERRORE_HA") scoreEl.style.color = "#ff4757"; else if (migliorPunteggio >= 90) scoreEl.style.color = "#2ed573"; else if (migliorPunteggio >= 75) scoreEl.style.color = "#ffa502"; else scoreEl.style.color = "#ff4757";
 
-        document.getElementById('risultato-box').style.display = 'block'; document.getElementById('btn-salva').style.display = 'block'; 
+        // Colore Score Story
+        const scoreStoryEl = document.getElementById('out-score-story');
+        if (migliorPunteggioStory >= 85) scoreStoryEl.style.color = "#2ed573"; else if (migliorPunteggioStory >= 60) scoreStoryEl.style.color = "#ffa502"; else scoreStoryEl.style.color = "#ff4757";
 
-        // --- LOGICA ADDOLCITORE ---
+        // --- LOGICA ADDOLCITORE (Consiglio Testuale) ---
         let consiglioUso = "";
         let coloreConsiglio = "";
 
         if (migliorPunteggio >= 85) {
-            consiglioUso = lang === 'it' ? "🛡️ PvP Ready: Eccellente per il competitivo." : "🛡️ PvP Ready: Excellent for competitive.";
+            consiglioUso = t.adv_pvp;
             coloreConsiglio = "#2ed573";
-        } else if (migliorPunteggio >= 30 && (ivs.atk >= 20 || ivs.spa >= 20 || ivs.spe >= 20)) {
-            // Caso Dodrio: Voto basso ma utile per la storia
-            consiglioUso = lang === 'it' ? "📖 Story Mode: Non ideale per PvP, ma ottimo per l'avventura." : "📖 Story Mode: Not ideal for PvP, but great for the story.";
+        } else if (migliorPunteggioStory >= 60 && (ivs.atk >= 20 || ivs.spa >= 20 || ivs.spe >= 20)) {
+            consiglioUso = t.adv_story;
             coloreConsiglio = "#ffa502";
         } else {
-            consiglioUso = lang === 'it' ? "⚠️ Breeder: Utile principalmente per il breeding." : "⚠️ Breeder: Mainly useful for breeding.";
+            consiglioUso = t.adv_breed;
             coloreConsiglio = "#ff4757";
         }
 
@@ -641,9 +680,10 @@
         outConsiglio.textContent = consiglioUso;
         outConsiglio.style.color = coloreConsiglio;
 
-        // Salva nel record per la tabella
         valutazioneCorrente.consiglio = consiglioUso;
         valutazioneCorrente.coloreConsiglio = coloreConsiglio;
+
+        document.getElementById('risultato-box').style.display = 'block'; document.getElementById('btn-salva').style.display = 'block'; 
     }
 
     function salvaNellaLista() {
@@ -694,7 +734,6 @@
             let btnTeamText = isInTeam ? t.in_team : t.btn_team;
             let btnTeamOnClick = isInTeam ? `event.stopPropagation();` : `aggiungiAlTeamDalBox('${pkmn.nome}', event, this)`;
 
-            // Estraiamo solo la prima parola della natura (es. "Decisa" o "Adamant")
             let naturaSemplice = traduzioniNatura[lang][pkmn.natura] ? traduzioniNatura[lang][pkmn.natura].split(' ')[0] : pkmn.natura;
 
             corpo.innerHTML += `<tr onclick="vaiAlDettaglio('${pkmn.nome}', event)">
@@ -727,6 +766,13 @@
             }
         });
     });
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker registrato con successo!'))
+                .catch(err => console.log('Errore Service Worker:', err));
+        });
+    }
 </script>
 
 </body>

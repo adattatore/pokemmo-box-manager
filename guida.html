@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guida - PokéMMO Box Manager</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e272e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
         /* --- STILI BASE CONDIVISI --- */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e272e; background-image: radial-gradient(#2f3640 1px, transparent 1px); background-size: 20px 20px; color: #d2dae2; padding: 20px; margin: 0; line-height: 1.6; }
@@ -71,13 +75,12 @@
             .container { padding: 15px; border-radius: 0; box-shadow: none; border: none; }
             h1 { font-size: 22px; margin-top: 10px; }
             
-            /* Navbar fissa stile App */
-            .navbar { position: fixed; bottom: 0; left: 0; width: 100%; margin: 0; padding: 10px 5px; border-radius: 20px 20px 0 0; background: rgba(30, 39, 46, 0.95); backdrop-filter: blur(10px); border-top: 2px solid #0fb9b1; border-left: none; border-right: none; border-bottom: none; z-index: 1000; justify-content: space-around; gap: 5px; box-shadow: 0 -5px 20px rgba(0,0,0,0.8); flex-wrap: nowrap; }
-            .navbar a { flex-direction: column; padding: 8px 2px; font-size: 10px; border-radius: 12px; text-align: center; gap: 4px; flex: 1; }
+            /* 6. NAVBAR FISSA E LINGUA */
+            .navbar { position: fixed; bottom: 0; left: 0; width: 100%; margin: 0; padding: 5px 5px; border-radius: 20px 20px 0 0; background: rgba(30, 39, 46, 0.95); backdrop-filter: blur(10px); border-top: 2px solid #0fb9b1; border-left: none; border-right: none; border-bottom: none; z-index: 1000; justify-content: space-around; gap: 5px; box-shadow: 0 -5px 20px rgba(0,0,0,0.8); flex-wrap: nowrap; }
+            .navbar a { flex-direction: column; padding: 8px 2px; font-size: 10px; line-height: 12px; border-radius: 12px; text-align: center; gap: 0px !important; flex: 1; }
             .navbar a::first-letter { font-size: 20px; }
-            
-            /* Lingua galleggiante sopra la navbar in basso */
-            .lang-switcher { position: absolute; top: -45px; right: 15px; margin: 0; z-index: 100; background: rgba(30, 39, 46, 0.95); box-shadow: 0 -2px 10px rgba(0,0,0,0.5); }
+            .lang-switcher { position: absolute; top: -38px; right: 15px; margin: 0; z-index: 100; background: rgba(30, 39, 46, 0.95); box-shadow: 0 -2px 10px rgba(0,0,0,0.5); padding: 3px 8px; }
+            .lang-btn { font-size: 14px; } /* Bandierine leggermente più piccole */
         }
     </style>
 </head>
@@ -307,6 +310,13 @@
             }
         });
     });
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker registrato con successo!'))
+                .catch(err => console.log('Errore Service Worker:', err));
+        });
+    }
 </script>
 
 </body>
